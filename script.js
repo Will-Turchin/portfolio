@@ -74,6 +74,16 @@
         z: Math.sin(v) * .68 + Math.sin(u * 3) * .12
       };
     },
+    // A compact version of the vehicle form for the Projects section's left
+    // margin, keeping the project cards and heading clear.
+    marginCar(i, n) {
+      const point = forms.car(i, n);
+      return {
+        x: point.x * .62,
+        y: point.y * .72,
+        z: point.z * .62
+      };
+    },
     // A compact stack of orbital traces for the Capabilities section's left
     // gutter, clear of both the heading and the skills grid.
     marginStack(i, n) {
@@ -117,7 +127,7 @@
     { x: .72, y: .49, scale: 1 },
     { x: .27, y: .50, scale: .86 },
     { x: .98, y: .50, scale: .44 },
-    { x: .50, y: .50, scale: 1.02 },
+    { x: .04, y: .40, scale: .68 },
     { x: .01, y: .56, scale: .44 },
     { x: .50, y: .48, scale: 1.02 },
     { x: .50, y: .50, scale: 1.08 }
