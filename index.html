@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Will Turchin is a computer science student and software engineer focused on platform engineering, infrastructure, telemetry, and developer tooling."
+    />
+    <meta name="theme-color" content="#090909" />
+    <title>Will Turchin — Platform & Infrastructure Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <canvas id="particle-field" aria-hidden="true"></canvas>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="wordmark" href="#home" aria-label="Will Turchin, home">
+        <span>WT</span><i></i>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#work">Work</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+      </nav>
+      <a class="header-cta" href="#contact">Let's talk <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="hero scene" id="home" data-shape="orb">
+        <div class="hero-copy reveal">
+          <p class="eyebrow"><span class="status-dot"></span> Open to 2027 internships</p>
+          <h1>I build systems<br />that help <em>builders.</em></h1>
+          <p class="hero-intro">
+            I'm Will Turchin, a software engineer focused on platform engineering,
+            infrastructure, and developer tooling—from embedded telemetry to CI/CD.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#projects">Explore my work <span>↓</span></a>
+            <a class="text-link" href="#contact">Connect with me <span>↗</span></a>
+          </div>
+        </div>
+        <div class="scroll-cue" aria-hidden="true"><span>Scroll to explore</span><i></i></div>
+        <div class="hero-meta mono" aria-label="Location and education">
+          <span>Golden, CO</span>
+          <span>CS @ Colorado School of Mines</span>
+        </div>
+      </section>
+
+      <section class="statement scene" data-shape="network">
+        <div class="section-index mono">01 / APPROACH</div>
+        <div class="statement-copy reveal">
+          <p class="kicker">I like the layer beneath the product.</p>
+          <h2>Reliable infrastructure.<br />Thoughtful tooling.<br /><span>Less friction.</span></h2>
+          <p>
+            The best systems disappear into the work. I build foundations that make
+            engineers faster, deployments safer, and complex data easier to understand.
+          </p>
+        </div>
+      </section>
+
+      <section class="experience scene" id="work" data-shape="brackets">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">Selected experience</p>
+            <h2>Where I've made an impact.</h2>
+          </div>
+          <p>Platform-minded engineering, technical leadership, and systems that operate in the real world.</p>
+        </div>
+
+        <div class="timeline reveal">
+          <article class="timeline-item">
+            <div class="timeline-marker"><span></span></div>
+            <div class="timeline-date mono">INTERNSHIP</div>
+            <div class="timeline-content">
+              <div class="role-line">
+                <h3>Software Engineering Intern</h3>
+                <span>Ibotta</span>
+              </div>
+              <p>
+                Built internal TypeScript tooling for AI-assisted dependency reviews, improved
+                confidence scoring for automated updates, and developed organization-wide
+                repository standards that made codebases easier for engineers and AI tools to navigate.
+              </p>
+              <ul class="tags" aria-label="Skills used">
+                <li>TypeScript</li><li>Developer tooling</li><li>GitHub</li><li>AI workflows</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-marker"><span></span></div>
+            <div class="timeline-date mono">CURRENT</div>
+            <div class="timeline-content">
+              <div class="role-line">
+                <h3>Software Technical Lead</h3>
+                <span>Mines Formula SAE</span>
+              </div>
+              <p>
+                Lead telemetry, sensor integration, data infrastructure, and architecture for a
+                student-built race car. Mentor new engineers while operating the servers,
+                observability stack, deployments, and backups behind the team.
+              </p>
+              <ul class="tags" aria-label="Skills used">
+                <li>C++</li><li>Python</li><li>CAN bus</li><li>Docker</li><li>Grafana</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="timeline-item">
+            <div class="timeline-marker"><span></span></div>
+            <div class="timeline-date mono">CURRENT</div>
+            <div class="timeline-content">
+              <div class="role-line">
+                <h3>Resident Advisor</h3>
+                <span>Colorado School of Mines</span>
+              </div>
+              <p>
+                Support a residential community through mentorship, clear communication,
+                inclusive programming, and calm ownership when people need help.
+              </p>
+              <ul class="tags" aria-label="Skills used">
+                <li>Leadership</li><li>Mentorship</li><li>Community</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="projects scene" id="projects" data-shape="car">
+        <div class="section-heading reveal">
+          <div>
+            <p class="eyebrow">Selected projects</p>
+            <h2>Systems, end to end.</h2>
+          </div>
+          <p>Software, infrastructure, sensors, and data—designed as one connected system.</p>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card featured reveal">
+            <div class="project-number mono">01</div>
+            <div class="project-visual telemetry-visual" aria-hidden="true">
+              <div class="track-line"></div>
+              <div class="data-pulse p1"></div><div class="data-pulse p2"></div><div class="data-pulse p3"></div>
+              <div class="telemetry-readout mono"><span>VELOCITY</span><b>28.7</b><small>m/s</small></div>
+            </div>
+            <div class="project-info">
+              <p class="project-type mono">TELEMETRY / INFRASTRUCTURE</p>
+              <h3>Formula SAE Telemetry Platform</h3>
+              <p>
+                A full vehicle data pipeline—from microcontroller and CAN bus collection to
+                Protocol Buffers, server infrastructure, time-series storage, and live Grafana dashboards.
+              </p>
+              <ul class="tags"><li>C++</li><li>Protobuf</li><li>InfluxDB</li><li>Grafana</li><li>GitHub Actions</li></ul>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-number mono">02</div>
+            <div class="project-visual filter-visual" aria-hidden="true">
+              <div class="filter-grid"></div><div class="filter-path path-a"></div><div class="filter-path path-b"></div>
+              <span class="axis x">POSITION →</span><span class="axis y">CONFIDENCE →</span>
+            </div>
+            <div class="project-info">
+              <p class="project-type mono">SENSOR FUSION</p>
+              <h3>Vehicle State Estimation</h3>
+              <p>Kalman and extended Kalman filters combining GPS and inertial data into validated position, velocity, and orientation estimates.</p>
+              <ul class="tags"><li>Python</li><li>EKF</li><li>GNSS</li><li>Data replay</li></ul>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-number mono">03</div>
+            <div class="project-visual capsure-visual" aria-hidden="true">
+              <div class="capsule c1"></div><div class="capsule c2"></div><div class="capsule c3"></div>
+              <div class="scan-line"></div><span class="scan-label mono">VISION LOCK / 98.4%</span>
+            </div>
+            <div class="project-info">
+              <p class="project-type mono">EMBEDDED / COMPUTER VISION</p>
+              <h3>CapSure Pill Dispenser</h3>
+              <p>An award-winning Raspberry Pi system integrating vision, servo control, touchscreen UI, alerts, and cloud synchronization.</p>
+              <ul class="tags"><li>Raspberry Pi</li><li>OpenCV</li><li>Python</li><li>Hardware</li></ul>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-number mono">04</div>
+            <div class="project-visual server-visual" aria-hidden="true">
+              <div class="rack"><i></i><i></i><i></i><i></i></div>
+              <div class="uptime mono">UPTIME <b>99.9%</b></div>
+            </div>
+            <div class="project-info">
+              <p class="project-type mono">HOMELAB / DEVOPS</p>
+              <h3>Personal Infrastructure</h3>
+              <p>A self-hosted Linux environment for applications, databases, monitoring, CI runners, automated deployments, and resilient backups.</p>
+              <ul class="tags"><li>Linux</li><li>Docker</li><li>PostgreSQL</li><li>CI/CD</li></ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="capabilities scene" id="about" data-shape="stack">
+        <div class="section-index mono">04 / CAPABILITIES</div>
+        <div class="capabilities-layout">
+          <div class="capabilities-intro reveal">
+            <p class="eyebrow">What I work with</p>
+            <h2>Comfortable across the stack. Most at home beneath it.</h2>
+            <p>
+              I connect product code to the systems it runs on—and the physical world it measures.
+            </p>
+          </div>
+          <div class="skill-groups reveal">
+            <div class="skill-group">
+              <span class="mono">01</span><h3>Languages</h3>
+              <p>C++ · Python · TypeScript · Java · C · SQL · Bash</p>
+            </div>
+            <div class="skill-group">
+              <span class="mono">02</span><h3>Infrastructure</h3>
+              <p>Docker · Linux · GitHub Actions · PostgreSQL · InfluxDB · Grafana · Telegraf</p>
+            </div>
+            <div class="skill-group">
+              <span class="mono">03</span><h3>Data & ML</h3>
+              <p>PyTorch · OpenCV · Time-series data · Kalman filters · Statistical analysis</p>
+            </div>
+            <div class="skill-group">
+              <span class="mono">04</span><h3>Embedded</h3>
+              <p>Teensy · Raspberry Pi · CAN bus · GNSS · Sensor integration · Real-time telemetry</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="education scene" data-shape="terrain">
+        <div class="education-card reveal">
+          <p class="eyebrow">Education</p>
+          <div class="school-mark" aria-hidden="true">M</div>
+          <h2>Colorado School of Mines</h2>
+          <p class="degree">Combined B.S. / M.S. in Computer Science <span>· Data Science focus</span></p>
+          <div class="education-stats">
+            <div><strong>3.9</strong><span>Cumulative GPA</span></div>
+            <div><strong>'27</strong><span>B.S. expected</span></div>
+            <div><strong>'28</strong><span>M.S. expected</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact scene" id="contact" data-shape="signal">
+        <div class="contact-inner reveal">
+          <p class="eyebrow">What's next?</p>
+          <h2>Let's build the systems<br />behind something <em>great.</em></h2>
+          <p>
+            I'm looking for 2027 internship opportunities in platform, infrastructure,
+            backend, or developer productivity engineering.
+          </p>
+          <div class="contact-actions">
+            <a class="button button-light" href="https://github.com/wturchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+            <a class="button button-outline" href="#home">Explore again <span>↑</span></a>
+          </div>
+          <p class="privacy-note mono">PUBLIC HANDLE / @WTURCHIN</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="wordmark" href="#home" aria-label="Back to top"><span>WT</span><i></i></a>
+      <p>Designed & built by Will Turchin <span>© <span id="year"></span></span></p>
+      <a href="#home" class="back-top">Back to top ↑</a>
+    </footer>
+  </body>
+</html>
