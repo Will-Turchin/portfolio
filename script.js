@@ -23,6 +23,9 @@
 
   const TAU = Math.PI * 2;
   const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+  const MARGIN_STACK_LAYERS = 7;
+  const TOP_SPLIT_LAYERS = 4;
+  const ORIGIN = { x: 0, y: 0, z: 0 };
   const DODGE_RADIUS = 76;
   const DODGE_STRENGTH = 10;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -87,8 +90,8 @@
     // A compact stack of orbital traces for the Capabilities section's left
     // gutter, clear of both the heading and the skills grid.
     marginStack(i, n) {
-      const layer = i % 7;
-      const t = Math.floor(i / 7) / Math.max(1, Math.ceil(n / 7) - 1);
+      const layer = i % MARGIN_STACK_LAYERS;
+      const t = Math.floor(i / MARGIN_STACK_LAYERS) / Math.max(1, Math.ceil(n / MARGIN_STACK_LAYERS) - 1);
       const angle = t * TAU * 2.4 + layer * .58;
       const radius = .035 + layer * .018;
       return {
@@ -98,14 +101,24 @@
       };
     },
     terrain(i, n) {
-      const side = Math.ceil(Math.sqrt(n));
-      const x = ((i % side) / Math.max(1, side - 1) - .5) * 2.25;
-      const z = (Math.floor(i / side) / Math.max(1, side - 1) - .5) * 1.7;
+      // Keep each incoming margin-stack strand together, sending it to one
+      // terrain form only. This makes the education transition a true split.
+      const sourceLayer = i % MARGIN_STACK_LAYERS;
+      const isTopRight = sourceLayer < TOP_SPLIT_LAYERS;
+      const groupLayers = isTopRight ? TOP_SPLIT_LAYERS : MARGIN_STACK_LAYERS - TOP_SPLIT_LAYERS;
+      const groupIndex = Math.floor(i / MARGIN_STACK_LAYERS) * groupLayers + (isTopRight ? sourceLayer : sourceLayer - TOP_SPLIT_LAYERS);
+      const groupSize = Math.ceil(n / MARGIN_STACK_LAYERS) * groupLayers;
+      const side = Math.ceil(Math.sqrt(groupSize));
+      const x = ((groupIndex % side) / Math.max(1, side - 1) - .5) * 2.25;
+      const z = (Math.floor(groupIndex / side) / Math.max(1, side - 1) - .5) * 1.7;
       const distance = Math.hypot(x * .82, z);
+      const pivotX = isTopRight ? 1.85 : -1.85;
+      const pivotY = isTopRight ? -.92 : 1.28;
       return {
-        x,
-        y: Math.sin(distance * 5.2) * .24 * Math.exp(-distance * .48) + Math.sin(x * 2.4) * .12,
-        z
+        x: x * .44 + pivotX,
+        y: (Math.sin(distance * 5.2) * .24 * Math.exp(-distance * .48) + Math.sin(x * 2.4) * .12) * .44 + pivotY,
+        z: z * .44,
+        rotationCenter: { x: pivotX, y: pivotY, z: 0 }
       };
     },
     signal(i, n) {
@@ -245,11 +258,19 @@
       const a = sceneForms[fromIndex](particle.i, particles.length);
       const b = sceneForms[toIndex](particle.i, particles.length);
       const warp = reduceMotion ? 0 : Math.sin(time * 3 + particle.phase + scrollPosition * 1.7) * .035 * particle.drift;
+      const pivotA = a.rotationCenter || ORIGIN;
+      const pivotB = b.rotationCenter || ORIGIN;
+      const pivotX = lerp(pivotA.x, pivotB.x, mix);
+      const pivotY = lerp(pivotA.y, pivotB.y, mix);
+      const pivotZ = lerp(pivotA.z, pivotB.z, mix);
       const point = rotate({
-        x: lerp(a.x, b.x, mix) * (1 + warp),
-        y: lerp(a.y, b.y, mix) + warp * .7,
-        z: lerp(a.z, b.z, mix) * (1 + warp)
+        x: lerp(a.x, b.x, mix) * (1 + warp) - pivotX,
+        y: lerp(a.y, b.y, mix) + warp * .7 - pivotY,
+        z: lerp(a.z, b.z, mix) * (1 + warp) - pivotZ
       }, rx, ry, rz);
+      point.x += pivotX;
+      point.y += pivotY;
+      point.z += pivotZ;
 
       const perspective = 3.15 / (3.15 - point.z);
       let x = centerX + point.x * scale * perspective;

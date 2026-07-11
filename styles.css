@@ -140,7 +140,7 @@ main, footer { position: relative; z-index: 2; }
 .skill-group h3 { margin: 0; font-size: 15px; font-weight: 500; }
 .skill-group p { margin: 0; color: #82827d; font-size: 12px; line-height: 1.8; }
 
-.education { width: 100%; min-height: 80vh; display: flex; align-items: center; justify-content: center; background: #0c0c0c; border-top: 1px solid var(--soft-line); border-bottom: 1px solid var(--soft-line); }
+.education { width: 100%; min-height: 80vh; display: flex; align-items: center; justify-content: center; background: transparent; border-top: 1px solid var(--soft-line); border-bottom: 1px solid var(--soft-line); }
 .education-card { width: min(900px, 90vw); text-align: center; position: relative; }
 .school-mark { width: 64px; height: 64px; margin: 0 auto 25px; border: 1px solid #555; display: grid; place-items: center; color: #bbb; font-family: Georgia, serif; font-size: 28px; transform: rotate(45deg); }
 .school-mark::first-letter { transform: rotate(-45deg); }
