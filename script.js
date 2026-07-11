@@ -16,12 +16,15 @@
   let sceneAnchors = [];
   let scrollTarget = 0;
   let scrollPosition = 0;
+  let scrollVelocity = 0;
+  let lastScrollUpdate = performance.now();
+  let lastFrame = performance.now();
   let time = 0;
 
   const TAU = Math.PI * 2;
   const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
-  const DODGE_RADIUS = 128;
-  const DODGE_STRENGTH = 34;
+  const DODGE_RADIUS = 76;
+  const DODGE_STRENGTH = 10;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (a, b, amount) => a + (b - a) * amount;
   const smoothstep = (value) => value * value * (3 - 2 * value);
@@ -49,15 +52,16 @@
         z: tube * Math.sin(3 * t) * 2
       };
     },
-    brackets(i, n) {
-      const side = i % 2 ? 1 : -1;
-      const t = Math.floor(i / 2) / Math.ceil(n / 2);
-      const angle = t * TAU * 2.2 + side * Math.PI;
-      const waist = .58 + Math.cos(t * TAU * 2) * .18;
+    // A tall but deliberately thin data ribbon for the Experience section's
+    // right-hand gutter. Its shallow depth keeps rotation from widening it.
+    marginRibbon(i, n) {
+      const strand = i % 5;
+      const t = Math.floor(i / 5) / Math.max(1, Math.ceil(n / 5) - 1);
+      const wave = t * TAU * 1.7;
       return {
-        x: side * waist + Math.cos(angle) * .23,
-        y: (t - .5) * 2.25,
-        z: Math.sin(angle) * .58
+        x: Math.sin(wave) * .11 + (strand - 2) * .028,
+        y: (t - .5) * 4.1,
+        z: Math.cos(wave) * .065
       };
     },
     car(i, n) {
@@ -70,14 +74,16 @@
         z: Math.sin(v) * .68 + Math.sin(u * 3) * .12
       };
     },
-    stack(i, n) {
+    // A compact stack of orbital traces for the Capabilities section's left
+    // gutter, clear of both the heading and the skills grid.
+    marginStack(i, n) {
       const layer = i % 7;
-      const t = Math.floor(i / 7) / Math.ceil(n / 7);
-      const angle = t * TAU * 2 + layer * .42;
-      const radius = .34 + layer * .1 + Math.sin(angle * 3) * .09;
+      const t = Math.floor(i / 7) / Math.max(1, Math.ceil(n / 7) - 1);
+      const angle = t * TAU * 2.4 + layer * .58;
+      const radius = .035 + layer * .018;
       return {
         x: Math.cos(angle) * radius,
-        y: (layer - 3) * .24 + Math.sin(angle * 2) * .08,
+        y: (layer - 3) * .33 + Math.sin(angle * 2) * .045,
         z: Math.sin(angle) * radius
       };
     },
@@ -110,9 +116,9 @@
   const sceneLayout = [
     { x: .72, y: .49, scale: 1 },
     { x: .27, y: .50, scale: .86 },
-    { x: .77, y: .50, scale: .9 },
+    { x: .98, y: .50, scale: .44 },
     { x: .50, y: .50, scale: 1.02 },
-    { x: .76, y: .50, scale: .9 },
+    { x: .01, y: .56, scale: .44 },
     { x: .50, y: .48, scale: 1.02 },
     { x: .50, y: .50, scale: 1.08 }
   ];
@@ -138,19 +144,32 @@
     updateScrollTarget();
   }
 
-  function updateScrollTarget() {
+  // Keep the point cloud visually behind the reader during decisive scrolls.
+  // The target still represents the current section, while the rendered
+  // position deliberately takes longer to catch up as input velocity rises.
+  function updateScrollTarget(trackVelocity = false) {
     const documentFocus = scrollY + height * .5;
     let index = 0;
     while (index < sceneAnchors.length - 1 && documentFocus > sceneAnchors[index + 1]) index += 1;
 
+    let nextTarget;
     if (index >= sceneAnchors.length - 1) {
-      scrollTarget = sceneAnchors.length - 1;
-      return;
+      nextTarget = sceneAnchors.length - 1;
+    } else {
+      const start = sceneAnchors[index];
+      const end = sceneAnchors[index + 1];
+      nextTarget = index + clamp((documentFocus - start) / Math.max(1, end - start), 0, 1);
     }
 
-    const start = sceneAnchors[index];
-    const end = sceneAnchors[index + 1];
-    scrollTarget = index + clamp((documentFocus - start) / Math.max(1, end - start), 0, 1);
+    if (trackVelocity && !reduceMotion) {
+      const now = performance.now();
+      const elapsed = clamp(now - lastScrollUpdate, 16, 120);
+      const velocity = Math.abs(nextTarget - scrollTarget) / (elapsed / 1000);
+      scrollVelocity = Math.max(scrollVelocity * .55, velocity);
+      lastScrollUpdate = now;
+    }
+
+    scrollTarget = nextTarget;
   }
 
   function resize() {
@@ -181,11 +200,18 @@
     return { x: x * cz - y * sz, y: x * sz + y * cz, z };
   }
 
-  function draw() {
+  function draw(frameTime) {
+    const frameScale = clamp((frameTime - lastFrame) / (1000 / 60), .25, 3);
+    lastFrame = frameTime;
     if (!reduceMotion) time += .0015;
-    scrollPosition += (scrollTarget - scrollPosition) * (reduceMotion ? 1 : .075);
-    pointer.x += (pointer.tx - pointer.x) * .14;
-    pointer.y += (pointer.ty - pointer.y) * .14;
+    scrollVelocity *= Math.pow(.9, frameScale);
+    const scrollSpeed = clamp(scrollVelocity / 3.5, 0, 1);
+    const followRate = reduceMotion ? 1 : lerp(.12, .032, scrollSpeed);
+    const followAmount = 1 - Math.pow(1 - followRate, frameScale);
+    scrollPosition += (scrollTarget - scrollPosition) * followAmount;
+    scrollPosition = clamp(scrollPosition, 0, Math.max(0, sceneForms.length - 1));
+    pointer.x += (pointer.tx - pointer.x) * .08;
+    pointer.y += (pointer.ty - pointer.y) * .08;
 
     const fromIndex = clamp(Math.floor(scrollPosition), 0, sceneForms.length - 1);
     const toIndex = Math.min(fromIndex + 1, sceneForms.length - 1);
@@ -237,11 +263,11 @@
         }
       }
 
-      if (x < -6 || x > width + 6 || y < -6 || y > height + 6) return;
-
       const depth = clamp((point.z + 1.35) / 2.7, 0, 1);
       const alpha = (.14 + depth * .7) * (.82 + Math.sin(time * 2 + particle.phase) * .12);
       const radius = particle.size * (.65 + depth * .9) * perspective;
+      if (x < -6 || x > width + 6 || y < -6 || y > height + 6) return;
+
       ctx.globalAlpha = alpha;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, TAU);
@@ -267,7 +293,16 @@
   });
 
   addEventListener("resize", resize, { passive: true });
-  addEventListener("scroll", updateScrollTarget, { passive: true });
+  addEventListener("scroll", () => {
+    updateScrollTarget(true);
+  }, { passive: true });
+  addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      lastFrame = performance.now();
+      scrollVelocity = 0;
+      updateScrollTarget();
+    }
+  });
   addEventListener("pointermove", (event) => {
     pointer.tx = (event.clientX / Math.max(1, width) - .5) * 2;
     pointer.ty = (event.clientY / Math.max(1, height) - .5) * 2;
@@ -277,5 +312,5 @@
 
   document.querySelector("#year").textContent = new Date().getFullYear();
   resize();
-  draw();
+  requestAnimationFrame(draw);
 })();
