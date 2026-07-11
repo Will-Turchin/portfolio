@@ -7,6 +7,7 @@
   const coarse = matchMedia("(pointer: coarse)").matches;
   const sceneEls = [...document.querySelectorAll(".scene")];
   const revealEls = [...document.querySelectorAll(".reveal")];
+  const finalTitle = document.querySelector("#contact h2");
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
 
   let width = 0;
@@ -143,8 +144,17 @@
     { x: .04, y: .40, scale: .68 },
     { x: .01, y: .56, scale: .44 },
     { x: .50, y: .48, scale: 1.02 },
-    { x: .50, y: .50, scale: 1.08 }
+    // Fallback placement when the CTA title cannot be measured.
+    { x: .50, y: .35, scale: 1.08 }
   ];
+  const finalSceneIndex = sceneForms.length - 1;
+
+  function finalTitleCenterY() {
+    const fallback = (sceneLayout[finalSceneIndex] || sceneLayout[0]).y * height;
+    if (!finalTitle) return fallback;
+    const titleRect = finalTitle.getBoundingClientRect();
+    return titleRect.top + titleRect.height * .5 + Math.min(42, height * .05);
+  }
 
   function buildParticles() {
     const areaScale = clamp((width * height) / 900000, .75, 1.35);
@@ -163,7 +173,16 @@
   }
 
   function measureScenes() {
-    sceneAnchors = sceneEls.map((scene) => scene.offsetTop + scene.offsetHeight * .5);
+    sceneAnchors = sceneEls.map((scene, index) => {
+      // The final form belongs to the closing headline, not the whole contact
+      // section. Its form remains final after this point, while its position
+      // follows the headline as both scroll out of view.
+      if (index === finalSceneIndex && finalTitle) {
+        const titleRect = finalTitle.getBoundingClientRect();
+        return scrollY + titleRect.top + titleRect.height * .5;
+      }
+      return scene.offsetTop + scene.offsetHeight * .5;
+    });
     updateScrollTarget();
   }
 
@@ -243,7 +262,9 @@
     const fromLayout = sceneLayout[fromIndex] || sceneLayout[0];
     const toLayout = sceneLayout[toIndex] || fromLayout;
     const centerX = lerp(fromLayout.x, toLayout.x, mix) * width;
-    const centerY = lerp(fromLayout.y, toLayout.y, mix) * height;
+    const fromCenterY = fromIndex === finalSceneIndex ? finalTitleCenterY() : fromLayout.y * height;
+    const toCenterY = toIndex === finalSceneIndex ? finalTitleCenterY() : toLayout.y * height;
+    const centerY = lerp(fromCenterY, toCenterY, mix);
     const responsiveScale = width < 600 ? .7 : width < 900 ? .84 : 1;
     const scale = Math.min(width, height) * .285 * lerp(fromLayout.scale, toLayout.scale, mix) * responsiveScale;
     const scrollSpin = scrollPosition * .72;
@@ -343,5 +364,6 @@
 
   document.querySelector("#year").textContent = new Date().getFullYear();
   resize();
+  if (document.fonts?.ready) document.fonts.ready.then(measureScenes);
   requestAnimationFrame(draw);
 })();
