@@ -17,3 +17,7 @@ Then visit `http://localhost:4173`.
 - The GitHub link uses Will's public `@wturchin` handle.
 - No private contact information is included.
 - Motion automatically simplifies when the visitor requests reduced motion.
+
+## Project images
+
+Project detail galleries use numbered image slots. See [`assets/projects/README.md`](assets/projects/README.md) for the folder map and naming convention. Empty slots intentionally render as designed placeholders.

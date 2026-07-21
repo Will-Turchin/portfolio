@@ -9,6 +9,189 @@
   const revealEls = [...document.querySelectorAll(".reveal")];
   const finalTitle = document.querySelector("#contact h2");
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
+  const projectPanel = document.querySelector("#project-panel");
+  const projectTriggers = [...document.querySelectorAll(".project-card-trigger")];
+  const projectCloseButton = projectPanel.querySelector("[data-project-close]");
+  const projectContent = {
+    number: projectPanel.querySelector("[data-project-number]"),
+    type: projectPanel.querySelector("[data-project-type]"),
+    title: projectPanel.querySelector("[data-project-title]"),
+    lead: projectPanel.querySelector("[data-project-lead]"),
+    system: projectPanel.querySelector("[data-project-system]"),
+    points: projectPanel.querySelector("[data-project-points]"),
+    tags: projectPanel.querySelector("[data-project-tags]")
+  };
+  const gallery = {
+    viewport: projectPanel.querySelector("[data-gallery-viewport]"),
+    track: projectPanel.querySelector("[data-gallery-track]"),
+    dots: projectPanel.querySelector("[data-gallery-dots]"),
+    current: projectPanel.querySelector("[data-gallery-current]"),
+    total: projectPanel.querySelector("[data-gallery-total]"),
+    previous: projectPanel.querySelector("[data-gallery-previous]"),
+    next: projectPanel.querySelector("[data-gallery-next]")
+  };
+  const pageSurfaces = [
+    document.querySelector(".site-header"),
+    document.querySelector("main"),
+    document.querySelector("footer")
+  ];
+
+  // Detail copy is grounded in Resume/context. CapSure currently has no context
+  // module, so its expanded copy deliberately stays within the facts on its card.
+  const projectDetails = {
+    "formula-sae-telemetry": {
+      number: "01",
+      type: "Telemetry / Infrastructure",
+      title: "Formula SAE Telemetry & Observability Platform",
+      lead: "A complete vehicle-data path built to turn track activity into information the team can use in real time.",
+      system: "The platform processes CAN, GPS, acceleration, wheel-speed, and temperature data from more than 10 sensors at up to 20 Hz. Standardized time-series schemas carry that data into Dockerized InfluxDB storage and live Grafana dashboards, backed by server health monitoring and resilient backups.",
+      points: [
+        "Processes more than 10 vehicle sensor streams at up to 20 Hz.",
+        "Standardizes ingestion across electronic control units and differing sensor frequencies.",
+        "Runs on a Dell PowerEdge server with Docker Compose, backups, and health monitoring.",
+        "Led telemetry development and mentored four teammates on architecture, Git, and deployments."
+      ],
+      tags: ["C++", "CAN bus", "InfluxDB", "Grafana", "Docker", "Linux"]
+    },
+    "vehicle-state-estimation": {
+      number: "02",
+      type: "Sensor Fusion / Analysis",
+      title: "Vehicle State Estimation",
+      lead: "State-estimation and visualization tools that make noisy race-car sensor data easier to validate, replay, and diagnose.",
+      system: "Python tooling combines GNSS and inertial measurements into estimates of the car's position, velocity, and orientation. Recorded CAN, GPS, acceleration, wheel-speed, and temperature data can be replayed through the same analysis flow, with Rerun visualization exposing vehicle behavior and system bottlenecks.",
+      points: [
+        "Works with data from more than 10 vehicle sensors sampled at up to 20 Hz.",
+        "Uses Kalman and extended Kalman filtering for position, velocity, and orientation estimates.",
+        "Replays recorded sessions to validate estimates against repeatable inputs.",
+        "Visualizes vehicle behavior in Rerun to help diagnose performance bottlenecks."
+      ],
+      tags: ["Python", "EKF", "GNSS", "CAN bus", "Rerun", "Data replay"]
+    },
+    "capsure-pill-dispenser": {
+      number: "03",
+      type: "Embedded / Computer Vision",
+      title: "CapSure Pill Dispenser",
+      lead: "An award-winning embedded system that brings sensing, physical control, and a clear user interface into one medication workflow.",
+      system: "A Raspberry Pi coordinates computer vision, servo-driven dispensing, a touchscreen interface, alerts, and cloud synchronization. The project treats the hardware and application as one connected system so identification, physical movement, feedback, and remote state stay aligned.",
+      points: [
+        "Integrates computer vision and servo control on a Raspberry Pi.",
+        "Provides an on-device touchscreen workflow for direct interaction.",
+        "Connects alerts and cloud synchronization to the physical dispenser.",
+        "Recognized as an award-winning project."
+      ],
+      tags: ["Raspberry Pi", "OpenCV", "Python", "Servo control", "Touchscreen", "Hardware"]
+    },
+    "self-hosted-platform": {
+      number: "04",
+      type: "Homelab / DevOps",
+      title: "Self-Hosted Platform",
+      lead: "A self-hosted platform for deploying, observing, and protecting the services I build and use.",
+      system: "A Dell PowerEdge R640 runs Ubuntu and a multi-service Docker Compose environment. A self-hosted GitHub Actions runner automatically deploys services after repository updates, while Grafana observability, health checks, and local and remote Borg backups keep the platform visible and recoverable.",
+      points: [
+        "Operates multiple services on Ubuntu with Docker Compose.",
+        "Automatically deploys repository updates through a self-hosted GitHub Actions runner.",
+        "Uses Grafana and health monitoring for infrastructure observability.",
+        "Protects service data with both local and remote Borg backups."
+      ],
+      tags: ["Linux", "Docker Compose", "GitHub Actions", "Borg", "Grafana", "Dell PowerEdge"]
+    },
+    "repo-context-agent": {
+      number: "05",
+      type: "AI Agents / Developer Tooling",
+      title: "Repo Context Agent",
+      lead: "An agentic system that makes large codebases easier for language models and coding agents to understand.",
+      system: "The agent converts repositories into structured, LLM-readable context artifacts. A Bedrock AgentCore backend and GitHub webhook keep that context connected to changes across 1,700 company repositories, creating a continuously updated layer for downstream coding-agent workflows.",
+      points: [
+        "Converts codebases into structured context artifacts designed for LLM consumption.",
+        "Improved coding-agent performance by 2% on internal benchmarks.",
+        "Uses a Bedrock AgentCore backend and GitHub webhook integration.",
+        "Tracks changes across 1,700 company repositories."
+      ],
+      tags: ["Python", "LLM APIs", "AWS Bedrock", "AgentCore", "GitHub webhooks"]
+    },
+    "ravenscope-digital-microscope": {
+      number: "06",
+      type: "Computer Vision / Imaging",
+      title: "RavenScope™ Digital Microscope",
+      lead: "Camera and computer-vision systems for a patented precision tissue-enrichment microscope.",
+      system: "A 64 MP Raspberry Pi and Arducam imaging system automates focus, cropping, and sample-region detection. Java-based ImageJ and Python workflows then process the captured slides, turning a precise physical imaging task into a repeatable analysis pipeline.",
+      points: [
+        "Designed camera and computer-vision systems for the patented RavenScope™ microscope.",
+        "Built a 64 MP Raspberry Pi imaging system with automated focusing and cropping.",
+        "Automatically detects sample regions before downstream analysis.",
+        "Analyzes slides at 20 μm resolution in under five minutes."
+      ],
+      tags: ["Java", "Python", "Raspberry Pi", "Arducam", "ImageJ", "Computer vision"]
+    },
+    "botta-daily-spin": {
+      number: "07",
+      type: "React / Product Prototype",
+      title: "Botta Daily Spin",
+      lead: "A polished daily-engagement prototype that won People's Choice at an Ibotta company hackathon.",
+      system: "The React prize wheel combines weighted results with carefully tuned easing, staged prize reveals, and distinct rare-reward effects. The interaction was built by an intern team competing alongside full-time employees and designed to make each spin feel responsive and rewarding.",
+      points: [
+        "Won People's Choice among 29 hackathon projects.",
+        "Built as an intern team competing against full-time employees.",
+        "Uses weighted results to control prize outcomes.",
+        "Adds easing, reveals, and rare-reward effects to the React interaction."
+      ],
+      tags: ["React", "TypeScript", "CSS", "Interaction design", "Animation"]
+    },
+    "ai-classical-music-generator": {
+      number: "08",
+      type: "Machine Learning / Music",
+      title: "AI Classical Music Generator",
+      lead: "A PyTorch sequence model trained to generate original classical-style melodies and polyphonic passages.",
+      system: "A custom data pipeline converts 35 MIDI files into 1,000 tokenized training sequences. The sequence model learns from that representation and, after 50 training epochs, generates polyphonic outputs containing recognizable musical motifs.",
+      points: [
+        "Trained a PyTorch-based sequence model on classical music.",
+        "Converted 35 MIDI files into 1,000 tokenized input sequences.",
+        "Generated polyphonic sequences with recognizable motifs after 50 epochs."
+      ],
+      tags: ["Python", "PyTorch", "MIDI", "Sequence modeling", "Data pipelines"]
+    },
+    "driver-screen": {
+      number: "09",
+      type: "CAN Bus / Embedded",
+      title: "Driver Screen",
+      lead: "A low-latency vehicle display that turns raw CAN messages into readable telemetry and immediate safety information.",
+      system: "The embedded board receives messages from the vehicle CAN bus, converts them into known sensor values, and presents the results to the driver. Engine-failure warnings share the same display path so critical conditions reach the cockpit without a separate monitoring workflow.",
+      points: [
+        "Converts CAN bus messages into readable, known sensor values.",
+        "Displays vehicle sensor information with less than 20 ms latency.",
+        "Routes every vehicle engine-failure warning to the driver display."
+      ],
+      tags: ["CAN bus", "Embedded systems", "Telemetry", "Driver safety"]
+    }
+  };
+  const gallerySlideCount = 5;
+  const imageExtensions = ["webp", "jpg", "jpeg", "png"];
+  const vehicleCarPoints = [
+    ...samplePolyline([[7,62],[9,52],[16,47],[26,44],[34,32],[41,27],[61,27],[70,35],[78,44],[89,47],[95,55],[94,64],[87,66],[84,60],[81,56],[75,55],[70,60],[68,66],[33,66],[30,60],[26,56],[20,55],[15,60],[13,66]], 54, true),
+    ...samplePolyline([[27,44],[37,34],[43,30],[60,30],[69,38],[75,44]], 18),
+    ...samplePolyline([[17,49],[84,49]], 20),
+    ...sampleEllipse(23, 66, 8.5, 10, 24),
+    ...sampleEllipse(77, 66, 8.5, 10, 24)
+  ];
+
+  function samplePolyline(path, count, closed = false) {
+    const segmentCount = closed ? path.length : path.length - 1;
+    return Array.from({ length: count }, (_, index) => {
+      const progress = (index / (closed ? count : Math.max(1, count - 1))) * segmentCount;
+      const segment = Math.min(Math.floor(progress), segmentCount - 1);
+      const mix = progress - segment;
+      const from = path[segment];
+      const to = path[(segment + 1) % path.length];
+      return [from[0] + (to[0] - from[0]) * mix, from[1] + (to[1] - from[1]) * mix];
+    });
+  }
+
+  function sampleEllipse(centerX, centerY, radiusX, radiusY, count) {
+    return Array.from({ length: count }, (_, index) => {
+      const angle = (index / count) * Math.PI * 2;
+      return [centerX + Math.cos(angle) * radiusX, centerY + Math.sin(angle) * radiusY];
+    });
+  }
 
   let width = 0;
   let height = 0;
@@ -21,6 +204,13 @@
   let lastScrollUpdate = performance.now();
   let lastFrame = performance.now();
   let time = 0;
+  let activeProjectSlug = null;
+  let galleryIndex = 0;
+  let galleryPointerStart = null;
+  let lockedScrollPosition = 0;
+  let returnFocusElement = null;
+  let closeTimer = null;
+  let savedBodyStyles = null;
 
   const TAU = Math.PI * 2;
   const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
@@ -36,6 +226,228 @@
     const value = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
     return value - Math.floor(value);
   };
+
+  function setPageInert(inert) {
+    pageSurfaces.forEach((surface) => {
+      if (surface) surface.inert = inert;
+    });
+  }
+
+  function lockPage(scrollPosition) {
+    lockedScrollPosition = scrollPosition;
+    savedBodyStyles = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width
+    };
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollPosition}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+  }
+
+  function unlockPage() {
+    if (!savedBodyStyles) return;
+    Object.assign(document.body.style, savedBodyStyles);
+    savedBodyStyles = null;
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    scrollTo(0, lockedScrollPosition);
+    requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      updateScrollTarget();
+    });
+  }
+
+  function addListItems(list, items, className = "") {
+    list.replaceChildren(...items.map((item) => {
+      const element = document.createElement("li");
+      element.textContent = item;
+      if (className) element.className = className;
+      return element;
+    }));
+  }
+
+  function tryProjectImage(slide, placeholder, project, slug, slot, extensionIndex = 0) {
+    if (extensionIndex >= imageExtensions.length) return;
+    const extension = imageExtensions[extensionIndex];
+    const slotName = String(slot).padStart(2, "0");
+    const image = new Image();
+    image.alt = `${project.title} gallery image ${slot}`;
+    image.draggable = false;
+    image.onload = () => {
+      placeholder.hidden = true;
+      slide.append(image);
+    };
+    image.onerror = () => tryProjectImage(slide, placeholder, project, slug, slot, extensionIndex + 1);
+    image.src = `assets/projects/${slug}/${slotName}.${extension}`;
+  }
+
+  function updateGallery(nextIndex) {
+    galleryIndex = clamp(nextIndex, 0, gallerySlideCount - 1);
+    gallery.track.style.transform = `translate3d(-${galleryIndex * 100}%, 0, 0)`;
+    gallery.current.textContent = String(galleryIndex + 1).padStart(2, "0");
+    gallery.previous.disabled = galleryIndex === 0;
+    gallery.next.disabled = galleryIndex === gallerySlideCount - 1;
+    [...gallery.dots.children].forEach((dot, index) => {
+      const active = index === galleryIndex;
+      dot.classList.toggle("is-active", active);
+      dot.setAttribute("aria-current", active ? "true" : "false");
+      dot.tabIndex = active ? 0 : -1;
+    });
+  }
+
+  function renderGallery(project, slug) {
+    const slides = [];
+    const dots = [];
+    for (let index = 0; index < gallerySlideCount; index += 1) {
+      const slot = index + 1;
+      const slotName = String(slot).padStart(2, "0");
+      const slide = document.createElement("div");
+      slide.className = "gallery-slide";
+      slide.setAttribute("role", "group");
+      slide.setAttribute("aria-label", `Image ${slot} of ${gallerySlideCount}`);
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "gallery-placeholder";
+      placeholder.innerHTML = `<span class="gallery-placeholder-label"><strong>Image ${slotName}</strong><span>Add ${slotName}.webp / .jpg / .png</span></span>`;
+      slide.append(placeholder);
+      slides.push(slide);
+      tryProjectImage(slide, placeholder, project, slug, slot);
+
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "gallery-dot";
+      dot.setAttribute("aria-label", `Show image ${slot}`);
+      dot.addEventListener("click", () => updateGallery(index));
+      dots.push(dot);
+    }
+    gallery.track.replaceChildren(...slides);
+    gallery.dots.replaceChildren(...dots);
+    gallery.total.textContent = String(gallerySlideCount).padStart(2, "0");
+    updateGallery(0);
+  }
+
+  function populateProject(project, slug) {
+    projectContent.number.textContent = project.number;
+    projectContent.type.textContent = project.type;
+    projectContent.title.textContent = project.title;
+    projectContent.lead.textContent = project.lead;
+    projectContent.system.textContent = project.system;
+    addListItems(projectContent.points, project.points);
+    addListItems(projectContent.tags, project.tags);
+    renderGallery(project, slug);
+  }
+
+  function projectUrl(slug) {
+    return `${location.pathname}${location.search}#project/${encodeURIComponent(slug)}`;
+  }
+
+  function openProject(slug, { pushHistory = true, scrollPosition = scrollY, trigger = null } = {}) {
+    const project = projectDetails[slug];
+    if (!project || activeProjectSlug) return;
+    activeProjectSlug = slug;
+    returnFocusElement = trigger || document.querySelector(`[data-project="${slug}"] .project-card-trigger`);
+
+    if (pushHistory) {
+      history.replaceState({ ...history.state, portfolioScroll: scrollPosition }, "", location.href);
+      history.pushState({ portfolioProject: slug, portfolioScroll: scrollPosition, openedFromCard: true }, "", projectUrl(slug));
+    }
+
+    populateProject(project, slug);
+    lockPage(scrollPosition);
+    setPageInert(true);
+    projectPanel.setAttribute("aria-hidden", "false");
+    void projectPanel.offsetWidth;
+    projectPanel.classList.add("is-open");
+    projectCloseButton.focus({ preventScroll: true });
+  }
+
+  function closeProject() {
+    if (!activeProjectSlug) return;
+    clearTimeout(closeTimer);
+    projectPanel.classList.remove("is-open");
+    projectPanel.setAttribute("aria-hidden", "true");
+
+    const finishClose = () => {
+      setPageInert(false);
+      unlockPage();
+      activeProjectSlug = null;
+      galleryPointerStart = null;
+      returnFocusElement?.focus({ preventScroll: true });
+      returnFocusElement = null;
+    };
+
+    if (reduceMotion) {
+      finishClose();
+    } else {
+      const handleTransitionEnd = (event) => {
+        if (event.target !== projectPanel || event.propertyName !== "transform") return;
+        projectPanel.removeEventListener("transitionend", handleTransitionEnd);
+        clearTimeout(closeTimer);
+        finishClose();
+      };
+      projectPanel.addEventListener("transitionend", handleTransitionEnd);
+      closeTimer = setTimeout(() => {
+        projectPanel.removeEventListener("transitionend", handleTransitionEnd);
+        finishClose();
+      }, 900);
+    }
+  }
+
+  function requestProjectClose() {
+    if (!activeProjectSlug) return;
+    if (history.state?.openedFromCard && history.state?.portfolioProject === activeProjectSlug) {
+      history.back();
+      return;
+    }
+    history.replaceState({ portfolioScroll: lockedScrollPosition }, "", `${location.pathname}${location.search}`);
+    closeProject();
+  }
+
+  function projectFromHash() {
+    const prefix = "#project/";
+    if (!location.hash.startsWith(prefix)) return null;
+    return decodeURIComponent(location.hash.slice(prefix.length));
+  }
+
+  function trapProjectFocus(event) {
+    if (event.key !== "Tab") return;
+    const focusable = [...projectPanel.querySelectorAll("button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])")]
+      .filter((element) => !element.hidden && element.getClientRects().length);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function buildVehicleScatter() {
+    const cloud = document.querySelector(".scatter-cloud");
+    if (!cloud) return;
+    const points = vehicleCarPoints.map(([carX, carY], index) => {
+      const point = document.createElement("i");
+      point.className = "scatter-point";
+      point.style.setProperty("--scatter-x", (8 + seeded(index, 41) * 84).toFixed(2));
+      point.style.setProperty("--scatter-y", (8 + seeded(index, 42) * 84).toFixed(2));
+      point.style.setProperty("--car-x", carX);
+      point.style.setProperty("--car-y", carY);
+      point.style.setProperty("--point-size", `${(1.8 + seeded(index, 43) * 2.8).toFixed(2)}px`);
+      point.style.setProperty("--point-opacity", (.2 + seeded(index, 44) * .58).toFixed(2));
+      point.style.setProperty("--settle-duration", `${(1.1 + seeded(index, 45) * .5).toFixed(2)}s`);
+      point.style.transitionDelay = `${Math.round(seeded(index, 46) * 120)}ms`;
+      return point;
+    });
+    cloud.replaceChildren(...points);
+  }
 
   // Each scene is a parametric 3D point cloud. Because every form is sampled with
   // the same particle index, adjacent forms can continuously melt into one another.
@@ -344,6 +756,57 @@
     revealObserver.observe(el);
   });
 
+  buildVehicleScatter();
+
+  projectTriggers.forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const slug = trigger.closest("[data-project]")?.dataset.project;
+      openProject(slug, { trigger });
+    });
+  });
+  projectCloseButton.addEventListener("click", requestProjectClose);
+  gallery.previous.addEventListener("click", () => updateGallery(galleryIndex - 1));
+  gallery.next.addEventListener("click", () => updateGallery(galleryIndex + 1));
+  gallery.viewport.addEventListener("pointerdown", (event) => {
+    galleryPointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    gallery.viewport.setPointerCapture?.(event.pointerId);
+  });
+  gallery.viewport.addEventListener("pointerup", (event) => {
+    if (!galleryPointerStart || galleryPointerStart.id !== event.pointerId) return;
+    const deltaX = event.clientX - galleryPointerStart.x;
+    const deltaY = event.clientY - galleryPointerStart.y;
+    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      updateGallery(galleryIndex + (deltaX < 0 ? 1 : -1));
+    }
+    galleryPointerStart = null;
+  });
+  gallery.viewport.addEventListener("pointercancel", () => { galleryPointerStart = null; });
+  projectPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      requestProjectClose();
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      updateGallery(galleryIndex - 1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      updateGallery(galleryIndex + 1);
+    } else {
+      trapProjectFocus(event);
+    }
+  });
+  addEventListener("popstate", (event) => {
+    const slug = event.state?.portfolioProject || projectFromHash();
+    if (slug && projectDetails[slug] && !activeProjectSlug) {
+      openProject(slug, {
+        pushHistory: false,
+        scrollPosition: Number(event.state?.portfolioScroll) || 0
+      });
+    } else if (!slug && activeProjectSlug) {
+      closeProject();
+    }
+  });
+
   addEventListener("resize", resize, { passive: true });
   addEventListener("scroll", () => {
     updateScrollTarget(true);
@@ -364,6 +827,17 @@
 
   document.querySelector("#year").textContent = new Date().getFullYear();
   resize();
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const initialProjectSlug = projectFromHash();
+  if (initialProjectSlug && projectDetails[initialProjectSlug]) {
+    const initialScroll = Number(history.state?.portfolioScroll) || 0;
+    history.replaceState({
+      ...history.state,
+      portfolioProject: initialProjectSlug,
+      portfolioScroll: initialScroll
+    }, "", location.href);
+    openProject(initialProjectSlug, { pushHistory: false, scrollPosition: initialScroll });
+  }
   if (document.fonts?.ready) document.fonts.ready.then(measureScenes);
   requestAnimationFrame(draw);
 })();
