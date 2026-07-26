@@ -231,6 +231,7 @@ main, footer { position: relative; z-index: 2; }
 .gallery-slide { position: relative; min-width: 100%; height: 100%; display: grid; place-items: center; overflow: hidden; user-select: none; }
 .gallery-slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .gallery-placeholder { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 44%, rgba(255,255,255,.035), transparent 35%), repeating-linear-gradient(0deg, transparent 0 59px, rgba(255,255,255,.025) 60px), repeating-linear-gradient(90deg, transparent 0 59px, rgba(255,255,255,.025) 60px), #0a0a0a; }
+.gallery-placeholder[hidden] { display: none; }
 .gallery-placeholder::before, .gallery-placeholder::after { content: ""; position: absolute; background: rgba(255,255,255,.08); }
 .gallery-placeholder::before { width: 1px; height: 74px; }
 .gallery-placeholder::after { width: 74px; height: 1px; }
