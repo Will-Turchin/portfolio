@@ -436,12 +436,10 @@
     const points = vehicleCarPoints.map(([carX, carY], index) => {
       const point = document.createElement("i");
       point.className = "scatter-point";
-      // Container query units let CSS move these points with transforms rather
-      // than animating left/top (which would re-layout every dot each frame).
-      point.style.setProperty("--scatter-x", `${(8 + seeded(index, 41) * 84).toFixed(2)}cqw`);
-      point.style.setProperty("--scatter-y", `${(8 + seeded(index, 42) * 84).toFixed(2)}cqh`);
-      point.style.setProperty("--car-x", `${carX}cqw`);
-      point.style.setProperty("--car-y", `${carY}cqh`);
+      point.style.setProperty("--scatter-x", (8 + seeded(index, 41) * 84).toFixed(2));
+      point.style.setProperty("--scatter-y", (8 + seeded(index, 42) * 84).toFixed(2));
+      point.style.setProperty("--car-x", carX);
+      point.style.setProperty("--car-y", carY);
       point.style.setProperty("--point-size", `${(1.8 + seeded(index, 43) * 2.8).toFixed(2)}px`);
       point.style.setProperty("--point-opacity", (.2 + seeded(index, 44) * .58).toFixed(2));
       point.style.setProperty("--settle-duration", `${(1.1 + seeded(index, 45) * .5).toFixed(2)}s`);
