@@ -1,11 +1,11 @@
 name: Deploy GitHub Pages
 
 on:
-  pull_request:
+  # A merged PR creates a push to main, so Pages deploys from the real branch
+  # instead of the temporary refs/pull/<number>/merge ref.
+  push:
     branches:
       - main
-    types:
-      - closed
   workflow_dispatch:
 
 permissions:
@@ -19,15 +19,13 @@ concurrency:
 
 jobs:
   deploy:
-    # A closed pull request is only a deployment event when it was merged.
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Check out merged main
+      - name: Check out main
         uses: actions/checkout@v4
 
       - name: Configure GitHub Pages
