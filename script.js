@@ -21,15 +21,6 @@
     points: projectPanel.querySelector("[data-project-points]"),
     tags: projectPanel.querySelector("[data-project-tags]")
   };
-  const gallery = {
-    viewport: projectPanel.querySelector("[data-gallery-viewport]"),
-    track: projectPanel.querySelector("[data-gallery-track]"),
-    dots: projectPanel.querySelector("[data-gallery-dots]"),
-    current: projectPanel.querySelector("[data-gallery-current]"),
-    total: projectPanel.querySelector("[data-gallery-total]"),
-    previous: projectPanel.querySelector("[data-gallery-previous]"),
-    next: projectPanel.querySelector("[data-gallery-next]")
-  };
   const pageSurfaces = [
     document.querySelector(".site-header"),
     document.querySelector("main"),
@@ -164,8 +155,6 @@
       tags: ["CAN bus", "Embedded systems", "Telemetry", "Driver safety"]
     }
   };
-  const gallerySlideCount = 5;
-  const imageExtensions = ["webp", "jpg", "jpeg", "png"];
   const vehicleCarPoints = [
     ...samplePolyline([[7,62],[9,52],[16,47],[26,44],[34,32],[41,27],[61,27],[70,35],[78,44],[89,47],[95,55],[94,64],[87,66],[84,60],[81,56],[75,55],[70,60],[68,66],[33,66],[30,60],[26,56],[20,55],[15,60],[13,66]], 54, true),
     ...samplePolyline([[27,44],[37,34],[43,30],[60,30],[69,38],[75,44]], 18),
@@ -205,8 +194,6 @@
   let lastFrame = performance.now();
   let time = 0;
   let activeProjectSlug = null;
-  let galleryIndex = 0;
-  let galleryPointerStart = null;
   let lockedScrollPosition = 0;
   let returnFocusElement = null;
   let closeTimer = null;
@@ -271,67 +258,7 @@
     }));
   }
 
-  function tryProjectImage(slide, placeholder, project, slug, slot, extensionIndex = 0) {
-    if (extensionIndex >= imageExtensions.length) return;
-    const extension = imageExtensions[extensionIndex];
-    const slotName = String(slot).padStart(2, "0");
-    const image = new Image();
-    image.alt = `${project.title} gallery image ${slot}`;
-    image.draggable = false;
-    image.onload = () => {
-      placeholder.hidden = true;
-      slide.append(image);
-    };
-    image.onerror = () => tryProjectImage(slide, placeholder, project, slug, slot, extensionIndex + 1);
-    image.src = `assets/projects/${slug}/${slotName}.${extension}`;
-  }
-
-  function updateGallery(nextIndex) {
-    galleryIndex = clamp(nextIndex, 0, gallerySlideCount - 1);
-    gallery.track.style.transform = `translate3d(-${galleryIndex * 100}%, 0, 0)`;
-    gallery.current.textContent = String(galleryIndex + 1).padStart(2, "0");
-    gallery.previous.disabled = galleryIndex === 0;
-    gallery.next.disabled = galleryIndex === gallerySlideCount - 1;
-    [...gallery.dots.children].forEach((dot, index) => {
-      const active = index === galleryIndex;
-      dot.classList.toggle("is-active", active);
-      dot.setAttribute("aria-current", active ? "true" : "false");
-      dot.tabIndex = active ? 0 : -1;
-    });
-  }
-
-  function renderGallery(project, slug) {
-    const slides = [];
-    const dots = [];
-    for (let index = 0; index < gallerySlideCount; index += 1) {
-      const slot = index + 1;
-      const slotName = String(slot).padStart(2, "0");
-      const slide = document.createElement("div");
-      slide.className = "gallery-slide";
-      slide.setAttribute("role", "group");
-      slide.setAttribute("aria-label", `Image ${slot} of ${gallerySlideCount}`);
-
-      const placeholder = document.createElement("div");
-      placeholder.className = "gallery-placeholder";
-      placeholder.innerHTML = `<span class="gallery-placeholder-label"><strong>Image ${slotName}</strong><span>Add ${slotName}.webp / .jpg / .png</span></span>`;
-      slide.append(placeholder);
-      slides.push(slide);
-      tryProjectImage(slide, placeholder, project, slug, slot);
-
-      const dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "gallery-dot";
-      dot.setAttribute("aria-label", `Show image ${slot}`);
-      dot.addEventListener("click", () => updateGallery(index));
-      dots.push(dot);
-    }
-    gallery.track.replaceChildren(...slides);
-    gallery.dots.replaceChildren(...dots);
-    gallery.total.textContent = String(gallerySlideCount).padStart(2, "0");
-    updateGallery(0);
-  }
-
-  function populateProject(project, slug) {
+  function populateProject(project) {
     projectContent.number.textContent = project.number;
     projectContent.type.textContent = project.type;
     projectContent.title.textContent = project.title;
@@ -339,7 +266,6 @@
     projectContent.system.textContent = project.system;
     addListItems(projectContent.points, project.points);
     addListItems(projectContent.tags, project.tags);
-    renderGallery(project, slug);
   }
 
   function projectUrl(slug) {
@@ -357,7 +283,7 @@
       history.pushState({ portfolioProject: slug, portfolioScroll: scrollPosition, openedFromCard: true }, "", projectUrl(slug));
     }
 
-    populateProject(project, slug);
+    populateProject(project);
     lockPage(scrollPosition);
     setPageInert(true);
     projectPanel.setAttribute("aria-hidden", "false");
@@ -376,7 +302,6 @@
       setPageInert(false);
       unlockPage();
       activeProjectSlug = null;
-      galleryPointerStart = null;
       returnFocusElement?.focus({ preventScroll: true });
       returnFocusElement = null;
     };
@@ -765,32 +690,10 @@
     });
   });
   projectCloseButton.addEventListener("click", requestProjectClose);
-  gallery.previous.addEventListener("click", () => updateGallery(galleryIndex - 1));
-  gallery.next.addEventListener("click", () => updateGallery(galleryIndex + 1));
-  gallery.viewport.addEventListener("pointerdown", (event) => {
-    galleryPointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
-    gallery.viewport.setPointerCapture?.(event.pointerId);
-  });
-  gallery.viewport.addEventListener("pointerup", (event) => {
-    if (!galleryPointerStart || galleryPointerStart.id !== event.pointerId) return;
-    const deltaX = event.clientX - galleryPointerStart.x;
-    const deltaY = event.clientY - galleryPointerStart.y;
-    if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      updateGallery(galleryIndex + (deltaX < 0 ? 1 : -1));
-    }
-    galleryPointerStart = null;
-  });
-  gallery.viewport.addEventListener("pointercancel", () => { galleryPointerStart = null; });
   projectPanel.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       event.preventDefault();
       requestProjectClose();
-    } else if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      updateGallery(galleryIndex - 1);
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault();
-      updateGallery(galleryIndex + 1);
     } else {
       trapProjectFocus(event);
     }

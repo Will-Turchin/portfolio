@@ -18,6 +18,6 @@ Then visit `http://localhost:4173`.
 - No private contact information is included.
 - Motion automatically simplifies when the visitor requests reduced motion.
 
-## Project images
+## Project image assets
 
-Project detail galleries use numbered image slots. See [`assets/projects/README.md`](assets/projects/README.md) for the folder map and naming convention. Empty slots intentionally render as designed placeholders.
+The existing project images remain in `assets/projects/` for future use, but the site does not currently render project image galleries.
