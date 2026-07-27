@@ -1,6 +1,33 @@
 (() => {
   "use strict";
 
+  const contactForm = document.querySelector("[data-contact-form]");
+  if (contactForm) {
+    const submitButton = contactForm.querySelector("button[type=submit]");
+    const formStatus = contactForm.querySelector("[data-form-status]");
+    contactForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+
+      submitButton.disabled = true;
+      formStatus.textContent = "Sending…";
+      try {
+        const response = await fetch(contactForm.action, {
+          method: "POST",
+          body: new FormData(contactForm),
+          headers: { Accept: "application/json" }
+        });
+        if (!response.ok) throw new Error("Form submission failed");
+        contactForm.reset();
+        formStatus.textContent = "Message sent — thanks for reaching out.";
+      } catch (error) {
+        formStatus.textContent = "Couldn’t send that message. Please try again or connect on LinkedIn.";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  }
+
   const canvas = document.querySelector("#particle-field");
   const ctx = canvas.getContext("2d", { alpha: true });
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -10,6 +37,9 @@
   const finalTitle = document.querySelector("#contact h2");
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
   const projectPanel = document.querySelector("#project-panel");
+  const contactPanel = document.querySelector("#contact-panel");
+  const contactOpeners = [...document.querySelectorAll("[data-contact-open]")];
+  const contactCloseButton = contactPanel.querySelector("[data-contact-close]");
   const projectGrid = document.querySelector(".project-grid");
   const projectCards = [...document.querySelectorAll(".project-card")];
   const headerCtaWrap = document.querySelector(".header-cta-wrap");
@@ -240,9 +270,12 @@
   let lastFrame = performance.now();
   let time = 0;
   let activeProjectSlug = null;
+  let contactPanelOpen = false;
   let lockedScrollPosition = 0;
   let returnFocusElement = null;
+  let contactReturnFocusElement = null;
   let closeTimer = null;
+  let contactCloseTimer = null;
   let savedBodyStyles = null;
 
   const TAU = Math.PI * 2;
@@ -379,6 +412,49 @@
     closeProject();
   }
 
+  function openContact(trigger = null) {
+    if (activeProjectSlug || contactPanelOpen) return;
+    contactPanelOpen = true;
+    contactReturnFocusElement = trigger;
+    lockPage(scrollY);
+    setPageInert(true);
+    contactPanel.setAttribute("aria-hidden", "false");
+    void contactPanel.offsetWidth;
+    contactPanel.classList.add("is-open");
+    contactCloseButton.focus({ preventScroll: true });
+  }
+
+  function closeContact() {
+    if (!contactPanelOpen) return;
+    clearTimeout(contactCloseTimer);
+    contactPanel.classList.remove("is-open");
+    contactPanel.setAttribute("aria-hidden", "true");
+
+    const finishClose = () => {
+      setPageInert(false);
+      unlockPage();
+      contactPanelOpen = false;
+      contactReturnFocusElement?.focus({ preventScroll: true });
+      contactReturnFocusElement = null;
+    };
+
+    if (reduceMotion) {
+      finishClose();
+    } else {
+      const handleTransitionEnd = (event) => {
+        if (event.target !== contactPanel || event.propertyName !== "transform") return;
+        contactPanel.removeEventListener("transitionend", handleTransitionEnd);
+        clearTimeout(contactCloseTimer);
+        finishClose();
+      };
+      contactPanel.addEventListener("transitionend", handleTransitionEnd);
+      contactCloseTimer = setTimeout(() => {
+        contactPanel.removeEventListener("transitionend", handleTransitionEnd);
+        finishClose();
+      }, 900);
+    }
+  }
+
   function projectFromHash() {
     const prefix = "#project/";
     if (!location.hash.startsWith(prefix)) return null;
@@ -386,8 +462,16 @@
   }
 
   function trapProjectFocus(event) {
+    trapFocus(projectPanel, event);
+  }
+
+  function trapContactFocus(event) {
+    trapFocus(contactPanel, event);
+  }
+
+  function trapFocus(panel, event) {
     if (event.key !== "Tab") return;
-    const focusable = [...projectPanel.querySelectorAll("button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])")]
+    const focusable = [...panel.querySelectorAll("button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])")]
       .filter((element) => !element.hidden && element.getClientRects().length);
     if (!focusable.length) return;
     const first = focusable[0];
@@ -752,6 +836,21 @@
       requestProjectClose();
     } else {
       trapProjectFocus(event);
+    }
+  });
+  contactOpeners.forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      openContact(trigger);
+    });
+  });
+  contactCloseButton.addEventListener("click", closeContact);
+  contactPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeContact();
+    } else {
+      trapContactFocus(event);
     }
   });
   addEventListener("popstate", (event) => {
