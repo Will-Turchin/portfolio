@@ -21,13 +21,11 @@ grep -Fqi '<!doctype html>' index.html || fail "index.html is missing its doctyp
 grep -Fq '<html lang="en">' index.html || fail "index.html is missing its language"
 grep -Fq '<title>' index.html || fail "index.html is missing a title"
 grep -Fq 'href="styles.css"' index.html || fail "index.html does not reference styles.css"
-grep -Fq 'src="script.js"' index.html || fail "index.html does not reference script.js"
-
-echo "Checking project gallery directories..."
-while IFS= read -r project; do
-  [[ -d "assets/projects/$project" ]] || fail "missing gallery directory: assets/projects/$project"
-  [[ -s "assets/projects/$project/README.md" ]] || fail "missing gallery README: assets/projects/$project/README.md"
-done < <(grep -o 'data-project="[^"]*"' index.html | cut -d'"' -f2 | sort -u)
+grep -Eq 'src="script\.js(\?[^"]*)?"' index.html || fail "index.html does not reference script.js"
+grep -Fq 'id="project-panel"' index.html || fail "index.html is missing project details"
+if grep -Eq 'project-gallery|data-gallery' index.html; then
+  fail "index.html still contains the project image gallery"
+fi
 
 echo "Checking JavaScript syntax..."
 if command -v node >/dev/null 2>&1; then

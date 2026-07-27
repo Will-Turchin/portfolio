@@ -5,14 +5,12 @@ Each project has its own clearly named folder:
 | Portfolio project | Image folder |
 | --- | --- |
 | Formula SAE Telemetry & Observability Platform | `formula-sae-telemetry/` |
-| Vehicle State Estimation | `vehicle-state-estimation/` |
 | CapSure Pill Dispenser | `capsure-pill-dispenser/` |
 | Self-Hosted Platform | `self-hosted-platform/` |
 | Repo Context Agent | `repo-context-agent/` |
 | RavenScope™ Digital Microscope | `ravenscope-digital-microscope/` |
 | Botta Daily Spin | `botta-daily-spin/` |
 | AI Classical Music Generator | `ai-classical-music-generator/` |
-| Driver Screen | `driver-screen/` |
 
 ## Add an image
 
