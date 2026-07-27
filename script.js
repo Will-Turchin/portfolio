@@ -11,6 +11,7 @@
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
   const projectPanel = document.querySelector("#project-panel");
   const projectGrid = document.querySelector(".project-grid");
+  const projectCards = [...document.querySelectorAll(".project-card")];
   const headerCtaWrap = document.querySelector(".header-cta-wrap");
   const headerCta = headerCtaWrap?.querySelector(".header-cta");
   if (headerCtaWrap && headerCta) {
@@ -727,6 +728,16 @@
   });
 
   buildVehicleScatter();
+
+  if (coarse && "IntersectionObserver" in window) {
+    const thumbnailObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-in-view", entry.isIntersecting);
+      });
+    }, { threshold: .35, rootMargin: "-8% 0px -8% 0px" });
+
+    projectCards.forEach((card) => thumbnailObserver.observe(card));
+  }
 
   projectTriggers.forEach((trigger) => {
     trigger.addEventListener("click", () => {
