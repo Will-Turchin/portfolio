@@ -39,7 +39,7 @@
           <a href="assets/will-turchin-resume.pdf" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
           <a href="https://www.linkedin.com/in/william-turchin/" target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a>
           <a href="https://github.com/will-turchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
-          <a href="mailto:wturchin@gmail.com">Email <span>↗</span></a>
+          <a href="#contact-message" data-contact-open aria-controls="contact-panel">Message <span>↗</span></a>
         </div>
       </div>
     </header>
@@ -52,7 +52,7 @@
           <p class="hero-intro">
             I'm Will Turchin, a software engineer focused on platform engineering,
             infrastructure, and developer tooling.
-            From Agentic Systems to CI/CD.
+            From Coding Agents to CI/CD.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#projects">Explore my work <span>↓</span></a>
@@ -73,7 +73,7 @@
           <h2>Reliable infrastructure.<br />Thoughtful tooling.<br /><span>Less friction.</span></h2>
           <p>
             The best systems are the ones you don't notice. I build foundations that make
-            engineers faster, deployments safer, and complex data digestable.
+            engineers faster, deployments safer, and complex data easier to understand.
           </p>
         </div>
       </section>
@@ -90,7 +90,7 @@
         <div class="timeline reveal">
           <article class="timeline-item">
             <div class="timeline-marker"><span></span></div>
-            <div class="timeline-date mono">INTERNSHIP</div>
+            <div class="timeline-date mono">MAY-AUG 2026</div>
             <div class="timeline-content">
               <div class="role-line">
                 <h3>Software Engineering Intern</h3>
@@ -109,7 +109,7 @@
 
           <article class="timeline-item">
             <div class="timeline-marker"><span></span></div>
-            <div class="timeline-date mono">CURRENT</div>
+            <div class="timeline-date mono">2024-PRESENT</div>
             <div class="timeline-content">
               <div class="role-line">
                 <h3>Software Technical Lead</h3>
@@ -128,18 +128,20 @@
 
           <article class="timeline-item">
             <div class="timeline-marker"><span></span></div>
-            <div class="timeline-date mono">CURRENT</div>
+            <div class="timeline-date mono">JAN-AUG 2025</div>
             <div class="timeline-content">
               <div class="role-line">
-                <h3>Resident Advisor</h3>
-                <span>Colorado School of Mines</span>
+                <h3>Software Engineering Intern</h3>
+                <span>Raven Biosystems</span>
               </div>
               <p>
-                Support a residential community through mentorship, clear communication,
-                inclusive programming, and calm ownership when people need help.
+                Designed camera and computer vision systems for the patented RavenScope™ digital
+                microscope. Built a 64 MP Raspberry Pi imaging system with automated focusing,
+                cropping, and sample-region detection, then automated 20 µm-resolution slide
+                analysis in under five minutes with Java-based ImageJ and Python workflows.
               </p>
               <ul class="tags" aria-label="Skills used">
-                <li>Leadership</li><li>Mentorship</li><li>Community</li>
+                <li>Computer vision</li><li>Python</li><li>Java</li><li>Raspberry Pi</li>
               </ul>
             </div>
           </article>
@@ -338,10 +340,10 @@
             <a class="button button-light" href="assets/will-turchin-resume.pdf" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
             <a class="button button-outline" href="https://www.linkedin.com/in/william-turchin/" target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a>
             <a class="button button-outline" href="https://github.com/will-turchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
-            <a class="button button-outline" href="mailto:wturchin@gmail.com">Email <span>↗</span></a>
+            <a class="button button-outline" href="#contact-message" data-contact-open aria-controls="contact-panel">Message <span>↗</span></a>
             <a class="button button-outline" href="#home">Explore again <span>↑</span></a>
           </div>
-          <p class="privacy-note mono">WTURCHIN@GMAIL.COM / @WTURCHIN</p>
+          <p class="privacy-note mono">MESSAGE / @WTURCHIN</p>
         </div>
       </section>
     </main>
@@ -389,6 +391,57 @@
           </div>
 
           <ul class="tags project-detail-tags" data-project-tags aria-label="Technologies used"></ul>
+        </article>
+      </div>
+    </section>
+
+    <section
+      class="project-panel contact-panel"
+      id="contact-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contact-dialog-title"
+      aria-hidden="true"
+    >
+      <header class="project-panel-header">
+        <button class="project-back mono" type="button" data-contact-close>
+          <span aria-hidden="true">←</span>
+          Back to page
+        </button>
+        <div class="project-panel-position mono">
+          <span>CONTACT</span>
+          <i></i>
+          <span>MESSAGE</span>
+        </div>
+      </header>
+
+      <div class="project-detail-layout">
+        <article class="project-detail-copy contact-dialog-copy">
+          <p class="project-detail-type mono">Start a conversation</p>
+          <h2 id="contact-dialog-title">Tell me what you're building.</h2>
+          <p class="project-detail-lead">Have an opportunity, project, or question? Send a note and I'll get back to you.</p>
+          <form class="contact-form" data-contact-form action="https://formspree.io/f/xzdnyvee" method="POST">
+            <div class="contact-form-fields">
+              <label>
+                <span class="mono">Name</span>
+                <input type="text" name="name" autocomplete="name" required />
+              </label>
+              <label>
+                <span class="mono">Email</span>
+                <input type="email" name="email" autocomplete="email" required />
+              </label>
+            </div>
+            <label>
+              <span class="mono">Message</span>
+              <textarea name="message" rows="5" required></textarea>
+            </label>
+            <input class="form-honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <input type="hidden" name="_subject" value="New portfolio contact" />
+            <div class="contact-form-footer">
+              <button class="button button-light" type="submit">Send message <span>↗</span></button>
+              <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+            </div>
+          </form>
         </article>
       </div>
     </section>

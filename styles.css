@@ -282,6 +282,7 @@ main, footer { position: relative; z-index: 2; }
 .project-detail-points li { position: relative; padding: 0 0 16px 22px; color: #999993; font-size: 12px; line-height: 1.7; }
 .project-detail-points li::before { content: ""; position: absolute; top: .7em; left: 0; width: 5px; height: 5px; border: 1px solid #6f6f6a; border-radius: 50%; }
 .project-detail-tags { max-width: 660px; margin-top: 35px; padding-top: 2px; }
+.contact-dialog-copy .contact-form { margin-left: 0; margin-right: 0; }
 
 .capabilities { min-height: 110vh; display: flex; align-items: center; }
 .capabilities-layout { width: 100%; display: grid; grid-template-columns: 1fr 1.1fr; gap: 11vw; }
@@ -309,6 +310,18 @@ main, footer { position: relative; z-index: 2; }
 .contact-inner { position: relative; z-index: 2; width: min(900px, 90vw); text-align: center; }
 .contact h2 { margin: 20px 0 30px; font-size: clamp(55px, 7vw, 104px); line-height: .96; letter-spacing: -.065em; font-weight: 500; }
 .contact-inner > p:not(.eyebrow):not(.privacy-note) { max-width: 620px; margin: auto; color: #8d8d88; line-height: 1.7; }
+.contact-form { max-width: 620px; margin: 42px auto 0; text-align: left; }
+.contact-form-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.contact-form label { display: grid; gap: 9px; margin-bottom: 16px; }
+.contact-form label > span { color: #777772; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.contact-form input:not([type="hidden"]), .contact-form textarea { width: 100%; border: 1px solid #3c3c39; border-radius: 0; padding: 13px 14px; background: rgba(255,255,255,.03); color: #e7e7e1; font: inherit; outline: none; }
+.contact-form textarea { resize: vertical; min-height: 130px; }
+.contact-form input:not([type="hidden"]):focus, .contact-form textarea:focus { border-color: #a8a8a1; box-shadow: 0 0 0 2px rgba(231,231,225,.08); }
+.contact-form-footer { display: flex; align-items: center; gap: 18px; }
+.contact-form-footer .button { cursor: pointer; }
+.contact-form-footer .button:disabled { cursor: wait; opacity: .6; }
+.form-status { min-height: 1.4em; margin: 0; color: #a8a8a1; font-size: 12px; line-height: 1.5; }
+.form-honeypot { position: absolute !important; left: -9999px !important; width: 1px !important; height: 1px !important; opacity: 0 !important; }
 .contact-actions { margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .button-light { background: #e7e7e1; color: #090909; }.button-outline { border-color: #50504c; color: #d6d6d0; }.button-outline:hover { background: #ddd; color: #090909; border-color: #ddd; }
 .privacy-note { margin-top: 28px; color: #4f4f4b; font-size: 8px; letter-spacing: .12em; }
@@ -350,7 +363,7 @@ footer p span { margin-left: 25px; }.back-top { font-family: var(--mono); font-s
   .project-detail-copy { padding: 56px 22px 64px; }.project-detail-copy h2 { font-size: clamp(45px, 14vw, 68px); }.project-detail-lead { margin-top: 28px; font-size: 15px; }.project-detail-section { margin-top: 42px; }
   .capabilities-intro h2 { font-size: 46px; }.skill-group { grid-template-columns: 35px 1fr; }.skill-group p { grid-column: 2; margin-top: 12px; }
   .education { min-height: 720px; }.education-card h2 { font-size: 43px; }.degree { line-height: 1.7; }.education-stats { margin-top: 45px; }.education-stats strong { font-size: 22px; }.education-stats span { font-size: 6px; }
-  .contact h2 { font-size: 52px; }.contact-actions { flex-direction: column; align-items: center; }.contact-actions .button { width: 220px; }.contact::before { width: 130vw; height: 130vw; }.contact::after { width: 90vw; height: 90vw; }
+  .contact h2 { font-size: 52px; }.contact-form-fields { grid-template-columns: 1fr; gap: 0; }.contact-form-footer { align-items: flex-start; flex-direction: column; gap: 14px; }.contact-actions { flex-direction: column; align-items: center; }.contact-actions .button { width: 220px; }.contact::before { width: 130vw; height: 130vw; }.contact::after { width: 90vw; height: 90vw; }
   footer { height: 150px; flex-wrap: wrap; } footer p { order: 3; width: 100%; } footer p span { float: right; }
   #particle-field { opacity: .42; }
 }

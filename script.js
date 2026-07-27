@@ -1,15 +1,48 @@
 (() => {
   "use strict";
 
+  const contactForm = document.querySelector("[data-contact-form]");
+  if (contactForm) {
+    const submitButton = contactForm.querySelector("button[type=submit]");
+    const formStatus = contactForm.querySelector("[data-form-status]");
+    contactForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+
+      submitButton.disabled = true;
+      formStatus.textContent = "Sending…";
+      try {
+        const response = await fetch(contactForm.action, {
+          method: "POST",
+          body: new FormData(contactForm),
+          headers: { Accept: "application/json" }
+        });
+        if (!response.ok) throw new Error("Form submission failed");
+        contactForm.reset();
+        formStatus.textContent = "Message sent — thanks for reaching out.";
+      } catch (error) {
+        formStatus.textContent = "Couldn’t send that message. Please try again or connect on LinkedIn.";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  }
+
   const canvas = document.querySelector("#particle-field");
   const ctx = canvas.getContext("2d", { alpha: true });
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const coarse = matchMedia("(pointer: coarse)").matches;
   const sceneEls = [...document.querySelectorAll(".scene")];
   const revealEls = [...document.querySelectorAll(".reveal")];
-  const finalTitle = document.querySelector("#contact h2");
+  // The contact section owns both concentric rings. Keep the particle anchor
+  // tied to this section, rather than to the headline, buttons, or footer copy;
+  // those elements can reflow without moving the rings' shared center.
+  const finalScene = document.querySelector(".contact.scene");
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
   const projectPanel = document.querySelector("#project-panel");
+  const contactPanel = document.querySelector("#contact-panel");
+  const contactOpeners = [...document.querySelectorAll("[data-contact-open]")];
+  const contactCloseButton = contactPanel.querySelector("[data-contact-close]");
   const projectGrid = document.querySelector(".project-grid");
   const projectCards = [...document.querySelectorAll(".project-card")];
   const headerCtaWrap = document.querySelector(".header-cta-wrap");
@@ -240,15 +273,23 @@
   let lastFrame = performance.now();
   let time = 0;
   let activeProjectSlug = null;
+  let contactPanelOpen = false;
   let lockedScrollPosition = 0;
   let returnFocusElement = null;
+  let contactReturnFocusElement = null;
   let closeTimer = null;
+  let contactCloseTimer = null;
   let savedBodyStyles = null;
 
   const TAU = Math.PI * 2;
   const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
   const MARGIN_STACK_LAYERS = 7;
   const TOP_SPLIT_LAYERS = 4;
+  const SIGNAL_RING_COUNT = 9;
+  const SIGNAL_RING_BASE_RADIUS = .22;
+  const SIGNAL_RING_STEP = .115;
+  // Keep the sizing calculation tied to the actual signal form's outer ring.
+  const SIGNAL_MAX_RADIUS = SIGNAL_RING_BASE_RADIUS + (SIGNAL_RING_COUNT - 1) * SIGNAL_RING_STEP;
   const ORIGIN = { x: 0, y: 0, z: 0 };
   const DODGE_RADIUS = 76;
   const DODGE_STRENGTH = 10;
@@ -379,6 +420,49 @@
     closeProject();
   }
 
+  function openContact(trigger = null) {
+    if (activeProjectSlug || contactPanelOpen) return;
+    contactPanelOpen = true;
+    contactReturnFocusElement = trigger;
+    lockPage(scrollY);
+    setPageInert(true);
+    contactPanel.setAttribute("aria-hidden", "false");
+    void contactPanel.offsetWidth;
+    contactPanel.classList.add("is-open");
+    contactCloseButton.focus({ preventScroll: true });
+  }
+
+  function closeContact() {
+    if (!contactPanelOpen) return;
+    clearTimeout(contactCloseTimer);
+    contactPanel.classList.remove("is-open");
+    contactPanel.setAttribute("aria-hidden", "true");
+
+    const finishClose = () => {
+      setPageInert(false);
+      unlockPage();
+      contactPanelOpen = false;
+      contactReturnFocusElement?.focus({ preventScroll: true });
+      contactReturnFocusElement = null;
+    };
+
+    if (reduceMotion) {
+      finishClose();
+    } else {
+      const handleTransitionEnd = (event) => {
+        if (event.target !== contactPanel || event.propertyName !== "transform") return;
+        contactPanel.removeEventListener("transitionend", handleTransitionEnd);
+        clearTimeout(contactCloseTimer);
+        finishClose();
+      };
+      contactPanel.addEventListener("transitionend", handleTransitionEnd);
+      contactCloseTimer = setTimeout(() => {
+        contactPanel.removeEventListener("transitionend", handleTransitionEnd);
+        finishClose();
+      }, 900);
+    }
+  }
+
   function projectFromHash() {
     const prefix = "#project/";
     if (!location.hash.startsWith(prefix)) return null;
@@ -386,8 +470,16 @@
   }
 
   function trapProjectFocus(event) {
+    trapFocus(projectPanel, event);
+  }
+
+  function trapContactFocus(event) {
+    trapFocus(contactPanel, event);
+  }
+
+  function trapFocus(panel, event) {
     if (event.key !== "Tab") return;
-    const focusable = [...projectPanel.querySelectorAll("button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])")]
+    const focusable = [...panel.querySelectorAll("button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])")]
       .filter((element) => !element.hidden && element.getClientRects().length);
     if (!focusable.length) return;
     const first = focusable[0];
@@ -506,10 +598,10 @@
       };
     },
     signal(i, n) {
-      const ring = i % 9;
-      const t = Math.floor(i / 9) / Math.ceil(n / 9);
+      const ring = i % SIGNAL_RING_COUNT;
+      const t = Math.floor(i / SIGNAL_RING_COUNT) / Math.ceil(n / SIGNAL_RING_COUNT);
       const angle = t * TAU;
-      const radius = .22 + ring * .115;
+      const radius = SIGNAL_RING_BASE_RADIUS + ring * SIGNAL_RING_STEP;
       const tilt = (ring - 4) * .13;
       return {
         x: Math.cos(angle) * radius,
@@ -527,16 +619,34 @@
     { x: .04, y: .40, scale: .68 },
     { x: .01, y: .56, scale: .44 },
     { x: .50, y: .48, scale: 1.02 },
-    // Fallback placement when the CTA title cannot be measured.
+    // Fallback placement if the contact section cannot be measured.
     { x: .50, y: .35, scale: 1.08 }
   ];
   const finalSceneIndex = sceneForms.length - 1;
 
-  function finalTitleCenterY() {
-    const fallback = (sceneLayout[finalSceneIndex] || sceneLayout[0]).y * height;
-    if (!finalTitle) return fallback;
-    const titleRect = finalTitle.getBoundingClientRect();
-    return titleRect.top + titleRect.height * .5 + Math.min(42, height * .05);
+  function finalSceneCenter() {
+    const fallback = sceneLayout[finalSceneIndex] || sceneLayout[0];
+    if (!finalScene) return { x: fallback.x * width, y: fallback.y * height };
+    const sceneRect = finalScene.getBoundingClientRect();
+    return {
+      x: sceneRect.left + sceneRect.width * .5,
+      y: sceneRect.top + sceneRect.height * .5
+    };
+  }
+
+  function finalSceneScale() {
+    const fallback = sceneLayout[finalSceneIndex] || sceneLayout[0];
+    const responsiveScale = width < 600 ? .7 : width < 900 ? .84 : 1;
+    const fallbackScale = Math.min(width, height) * .285 * fallback.scale * responsiveScale;
+    if (!finalScene) return fallbackScale;
+
+    // The inner ring is the contact section's ::after pseudo-element. Read its
+    // rendered diameter so this stays correct if its responsive size changes.
+    const ringStyle = getComputedStyle(finalScene, "::after");
+    const ringWidth = parseFloat(ringStyle.width);
+    const ringBorder = parseFloat(ringStyle.borderLeftWidth) + parseFloat(ringStyle.borderRightWidth);
+    if (!Number.isFinite(ringWidth) || ringWidth <= 0) return fallbackScale;
+    return (ringWidth + ringBorder) / (SIGNAL_MAX_RADIUS * 2);
   }
 
   function buildParticles() {
@@ -557,12 +667,12 @@
 
   function measureScenes() {
     sceneAnchors = sceneEls.map((scene, index) => {
-      // The final form belongs to the closing headline, not the whole contact
-      // section. Its form remains final after this point, while its position
-      // follows the headline as both scroll out of view.
-      if (index === finalSceneIndex && finalTitle) {
-        const titleRect = finalTitle.getBoundingClientRect();
-        return scrollY + titleRect.top + titleRect.height * .5;
+      // The final form belongs inside the contact section's concentric circles.
+      // Its form remains final after this point, while its position follows the
+      // section center as it moves through the viewport.
+      if (index === finalSceneIndex && finalScene) {
+        const sceneRect = finalScene.getBoundingClientRect();
+        return scrollY + sceneRect.top + sceneRect.height * .5;
       }
       return scene.offsetTop + scene.offsetHeight * .5;
     });
@@ -644,12 +754,18 @@
     const mix = smoothstep(clamp(rawMix, 0, 1));
     const fromLayout = sceneLayout[fromIndex] || sceneLayout[0];
     const toLayout = sceneLayout[toIndex] || fromLayout;
-    const centerX = lerp(fromLayout.x, toLayout.x, mix) * width;
-    const fromCenterY = fromIndex === finalSceneIndex ? finalTitleCenterY() : fromLayout.y * height;
-    const toCenterY = toIndex === finalSceneIndex ? finalTitleCenterY() : toLayout.y * height;
+    const finalCenter = finalSceneCenter();
+    const baseScale = Math.min(width, height) * .285 * (width < 600 ? .7 : width < 900 ? .84 : 1);
+    const finalScale = finalSceneScale();
+    const fromCenterX = fromIndex === finalSceneIndex ? finalCenter.x : fromLayout.x * width;
+    const toCenterX = toIndex === finalSceneIndex ? finalCenter.x : toLayout.x * width;
+    const centerX = lerp(fromCenterX, toCenterX, mix);
+    const fromCenterY = fromIndex === finalSceneIndex ? finalCenter.y : fromLayout.y * height;
+    const toCenterY = toIndex === finalSceneIndex ? finalCenter.y : toLayout.y * height;
     const centerY = lerp(fromCenterY, toCenterY, mix);
-    const responsiveScale = width < 600 ? .7 : width < 900 ? .84 : 1;
-    const scale = Math.min(width, height) * .285 * lerp(fromLayout.scale, toLayout.scale, mix) * responsiveScale;
+    const fromScale = fromIndex === finalSceneIndex ? finalScale : baseScale * fromLayout.scale;
+    const toScale = toIndex === finalSceneIndex ? finalScale : baseScale * toLayout.scale;
+    const scale = lerp(fromScale, toScale, mix);
     const scrollSpin = scrollPosition * .72;
     const rx = -.18 + Math.sin(time * .55) * .13;
     const ry = time + scrollSpin;
@@ -752,6 +868,21 @@
       requestProjectClose();
     } else {
       trapProjectFocus(event);
+    }
+  });
+  contactOpeners.forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      openContact(trigger);
+    });
+  });
+  contactCloseButton.addEventListener("click", closeContact);
+  contactPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeContact();
+    } else {
+      trapContactFocus(event);
     }
   });
   addEventListener("popstate", (event) => {
