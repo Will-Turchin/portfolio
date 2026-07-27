@@ -15,7 +15,7 @@ Then visit `http://localhost:4173`.
 ## Publishing notes
 
 - The GitHub link uses Will's public `@wturchin` handle.
-- No private contact information is included.
+- The closing contact section includes public Email, LinkedIn, GitHub, and Resume links.
 - Motion automatically simplifies when the visitor requests reduced motion.
 
 ## Project image assets

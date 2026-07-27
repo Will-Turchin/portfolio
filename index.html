@@ -31,7 +31,17 @@
         <a href="#projects">Projects</a>
         <a href="#about">About</a>
       </nav>
-      <a class="header-cta" href="#contact">Let's talk <span aria-hidden="true">↗</span></a>
+      <div class="header-cta-wrap">
+        <button class="header-cta" type="button" aria-haspopup="true" aria-controls="contact-menu" aria-expanded="false">
+          Let's talk <span aria-hidden="true">↗</span>
+        </button>
+        <div class="header-cta-menu" id="contact-menu" aria-label="Ways to connect">
+          <a href="assets/will-turchin-resume.pdf" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
+          <a href="https://www.linkedin.com/in/william-turchin/" target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a>
+          <a href="https://github.com/will-turchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+          <a href="mailto:wturchin@gmail.com">Email <span>↗</span></a>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -41,7 +51,8 @@
           <h1>I build systems<br />that help <em>builders.</em></h1>
           <p class="hero-intro">
             I'm Will Turchin, a software engineer focused on platform engineering,
-            infrastructure, and developer tooling—from embedded telemetry to CI/CD.
+            infrastructure, and developer tooling.
+            From Agentic Systems to CI/CD.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#projects">Explore my work <span>↓</span></a>
@@ -61,8 +72,8 @@
           <p class="kicker">I like the layer beneath the product.</p>
           <h2>Reliable infrastructure.<br />Thoughtful tooling.<br /><span>Less friction.</span></h2>
           <p>
-            The best systems disappear into the work. I build foundations that make
-            engineers faster, deployments safer, and complex data easier to understand.
+            The best systems are the ones you don't notice. I build foundations that make
+            engineers faster, deployments safer, and complex data digestable.
           </p>
         </div>
       </section>
@@ -145,9 +156,9 @@
         </div>
 
         <div class="project-grid">
-          <article class="project-card featured reveal" data-project="formula-sae-telemetry">
+          <article class="project-card reveal" data-project="formula-sae-telemetry">
             <button class="project-card-trigger" type="button" aria-label="Open Formula SAE Telemetry and Observability Platform project details"></button>
-            <div class="project-number mono">01</div>
+            <div class="project-number mono">03</div>
             <div class="project-visual telemetry-visual" aria-hidden="true">
               <div class="track-line"></div>
               <div class="data-pulse p1"></div><div class="data-pulse p2"></div><div class="data-pulse p3"></div>
@@ -165,25 +176,9 @@
             </div>
           </article>
 
-          <article class="project-card reveal" data-project="vehicle-state-estimation">
-            <button class="project-card-trigger" type="button" aria-label="Open Vehicle State Estimation project details"></button>
-            <div class="project-number mono">02</div>
-            <div class="project-visual filter-visual" aria-hidden="true">
-              <div class="state-grid"></div><div class="scatter-cloud"></div>
-              <span class="axis x">POSITION →</span><span class="axis y">CONFIDENCE →</span>
-            </div>
-            <div class="project-info">
-              <p class="project-type mono">SENSOR FUSION</p>
-              <h3>Vehicle State Estimation</h3>
-              <p>Kalman and extended Kalman filters combining GPS and inertial data into validated position, velocity, and orientation estimates.</p>
-              <ul class="tags"><li>Python</li><li>EKF</li><li>GNSS</li><li>Data replay</li></ul>
-              <span class="project-open-label mono" aria-hidden="true">View project <i>→</i></span>
-            </div>
-          </article>
-
           <article class="project-card reveal" data-project="capsure-pill-dispenser">
             <button class="project-card-trigger" type="button" aria-label="Open CapSure Pill Dispenser project details"></button>
-            <div class="project-number mono">03</div>
+            <div class="project-number mono">04</div>
             <div class="project-visual capsure-visual" aria-hidden="true">
               <div class="capsule c1"></div><div class="capsule c2"></div><div class="capsule c3"></div>
               <div class="scan-line"></div><span class="scan-label mono">VISION LOCK / 98.4%</span>
@@ -199,7 +194,7 @@
 
           <article class="project-card reveal" data-project="self-hosted-platform">
             <button class="project-card-trigger" type="button" aria-label="Open Self-Hosted Platform project details"></button>
-            <div class="project-number mono">04</div>
+            <div class="project-number mono">02</div>
             <div class="project-visual server-visual" aria-hidden="true">
               <div class="rack"><i></i><i></i><i></i><i></i></div>
               <div class="uptime mono">UPTIME <b>99.9%</b></div>
@@ -213,9 +208,9 @@
             </div>
           </article>
 
-          <article class="project-card reveal" data-project="repo-context-agent">
+          <article class="project-card featured reveal" data-project="repo-context-agent">
             <button class="project-card-trigger" type="button" aria-label="Open Repo Context Agent project details"></button>
-            <div class="project-number mono">05</div>
+            <div class="project-number mono">01</div>
             <div class="project-visual agent-visual" aria-hidden="true">
               <div class="repo-tree mono"><span>repo/</span><i class="repo-src">src/</i><i class="tree-detail">context/</i><i class="tree-detail">agents.md</i></div>
               <div class="agent-link"></div>
@@ -232,7 +227,7 @@
 
           <article class="project-card reveal" data-project="ravenscope-digital-microscope">
             <button class="project-card-trigger" type="button" aria-label="Open RavenScope digital microscope project details"></button>
-            <div class="project-number mono">06</div>
+            <div class="project-number mono">05</div>
             <div class="project-visual microscope-visual" aria-hidden="true">
               <div class="lens"><i></i></div>
               <div class="sample-region"></div>
@@ -242,7 +237,7 @@
             <div class="project-info">
               <p class="project-type mono">COMPUTER VISION / IMAGING</p>
               <h3>RavenScope™ Digital Microscope</h3>
-              <p>A patented 64 MP Raspberry Pi imaging system with automated focus, cropping, sample detection, and high-resolution slide analysis.</p>
+              <p>A 64 MP imaging system with automated focus, cropping, sample detection, and high-resolution slide analysis.</p>
               <ul class="tags"><li>Java</li><li>Python</li><li>Arducam</li><li>ImageJ</li></ul>
               <span class="project-open-label mono" aria-hidden="true">View project <i>→</i></span>
             </div>
@@ -267,7 +262,7 @@
 
           <article class="project-card reveal" data-project="ai-classical-music-generator">
             <button class="project-card-trigger" type="button" aria-label="Open AI Classical Music Generator project details"></button>
-            <div class="project-number mono">08</div>
+            <div class="project-number mono">06</div>
             <div class="project-visual music-visual" aria-hidden="true">
               <div class="music-staff">
                 <i class="note n1"></i><i class="note n2"></i><i class="note n3"></i><i class="note n4"></i>
@@ -283,29 +278,6 @@
             </div>
           </article>
 
-          <article class="project-card reveal" data-project="driver-screen">
-            <button class="project-card-trigger" type="button" aria-label="Open Driver Screen project details"></button>
-            <div class="project-number mono">09</div>
-            <div class="project-visual driver-visual" aria-hidden="true">
-              <div class="driver-display mono">
-                <div class="driver-display-head"><span>VEHICLE STATUS</span><i>CAN ONLINE</i></div>
-                <div class="driver-metrics">
-                  <div><span>RPM</span><b><i class="readout-ticker"><em>3,240</em><em>4,180</em><em>5,620</em><em>7,810</em><em>6,430</em><em>4,550</em><em>3,240</em></i></b></div>
-                  <div><span>COOLANT</span><b><i class="readout-ticker"><em>82°</em><em>85°</em><em>90°</em><em>96°</em><em>92°</em><em>86°</em><em>82°</em></i></b></div>
-                  <div><span>OIL PSI</span><b><i class="readout-ticker"><em>54</em><em>57</em><em>61</em><em>59</em><em>56</em><em>55</em><em>54</em></i></b></div>
-                </div>
-                <div class="driver-status"><span>ENGINE</span><b>NOMINAL</b><small>18 ms</small></div>
-              </div>
-              <div class="warning-strip mono">CAN / TELEMETRY / WARNINGS</div>
-            </div>
-            <div class="project-info">
-              <p class="project-type mono">CAN BUS / EMBEDDED</p>
-              <h3>Driver Screen</h3>
-              <p>An embedded CAN display that translates vehicle messages into readable sensor data and safety-critical engine warnings in under 20 ms.</p>
-              <ul class="tags"><li>CAN Bus</li><li>Embedded systems</li><li>Telemetry</li></ul>
-              <span class="project-open-label mono" aria-hidden="true">View project <i>→</i></span>
-            </div>
-          </article>
         </div>
       </section>
 
@@ -347,7 +319,7 @@
           <h2>Colorado School of Mines</h2>
           <p class="degree">Combined B.S. / M.S. in Computer Science <span>· Data Science focus</span></p>
           <div class="education-stats">
-            <div><strong>3.9</strong><span>Cumulative GPA</span></div>
+            <div><strong>3.898</strong><span>Cumulative GPA</span></div>
             <div><strong>'27</strong><span>B.S. expected</span></div>
             <div><strong>'28</strong><span>M.S. expected</span></div>
           </div>
@@ -363,10 +335,13 @@
             backend, or developer productivity engineering.
           </p>
           <div class="contact-actions">
-            <a class="button button-light" href="https://github.com/will-turchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+            <a class="button button-light" href="assets/will-turchin-resume.pdf" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
+            <a class="button button-outline" href="https://www.linkedin.com/in/william-turchin/" target="_blank" rel="noreferrer">LinkedIn <span>↗</span></a>
+            <a class="button button-outline" href="https://github.com/will-turchin" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+            <a class="button button-outline" href="mailto:wturchin@gmail.com">Email <span>↗</span></a>
             <a class="button button-outline" href="#home">Explore again <span>↑</span></a>
           </div>
-          <p class="privacy-note mono">PUBLIC HANDLE / @WTURCHIN</p>
+          <p class="privacy-note mono">WTURCHIN@GMAIL.COM / @WTURCHIN</p>
         </div>
       </section>
     </main>
@@ -393,7 +368,7 @@
         <div class="project-panel-position mono">
           <span data-project-number>01</span>
           <i></i>
-          <span>09</span>
+          <span>07</span>
         </div>
       </header>
 

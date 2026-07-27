@@ -10,6 +10,78 @@
   const finalTitle = document.querySelector("#contact h2");
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
   const projectPanel = document.querySelector("#project-panel");
+  const projectGrid = document.querySelector(".project-grid");
+  const headerCtaWrap = document.querySelector(".header-cta-wrap");
+  const headerCta = headerCtaWrap?.querySelector(".header-cta");
+  if (headerCtaWrap && headerCta) {
+    let menuPinned = false;
+    let menuDismissed = false;
+    let closeTimer;
+    const setMenuState = (expanded) => {
+      headerCtaWrap.classList.toggle("is-open", expanded);
+      headerCta.setAttribute("aria-expanded", String(expanded));
+    };
+    const clearCloseTimer = () => clearTimeout(closeTimer);
+    const closeMenu = () => {
+      menuPinned = false;
+      setMenuState(false);
+    };
+
+    headerCtaWrap.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") {
+        menuDismissed = false;
+        clearCloseTimer();
+        if (!menuPinned) setMenuState(true);
+      }
+    });
+    headerCtaWrap.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse" && !menuPinned) {
+        clearCloseTimer();
+        closeTimer = setTimeout(() => setMenuState(false), 120);
+      }
+      menuDismissed = false;
+    });
+    headerCta.addEventListener("click", () => {
+      clearCloseTimer();
+      if (menuPinned) {
+        menuDismissed = true;
+        closeMenu();
+      } else {
+        menuDismissed = false;
+        menuPinned = true;
+        setMenuState(true);
+      }
+    });
+    headerCtaWrap.addEventListener("focusin", () => {
+      clearCloseTimer();
+      if (!menuDismissed) setMenuState(true);
+    });
+    headerCtaWrap.addEventListener("focusout", (event) => {
+      if (!headerCtaWrap.contains(event.relatedTarget)) closeMenu();
+    });
+    headerCtaWrap.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
+    document.addEventListener("pointerdown", (event) => {
+      if (!headerCtaWrap.contains(event.target)) closeMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && headerCta.getAttribute("aria-expanded") === "true") {
+        closeMenu();
+        headerCta.focus();
+      }
+    });
+  }
+  [
+    "repo-context-agent",
+    "self-hosted-platform",
+    "formula-sae-telemetry",
+    "capsure-pill-dispenser",
+    "ravenscope-digital-microscope",
+    "ai-classical-music-generator",
+    "botta-daily-spin"
+  ].forEach((slug) => {
+    const card = projectGrid.querySelector(`[data-project="${slug}"]`);
+    if (card) projectGrid.append(card);
+  });
   const projectTriggers = [...document.querySelectorAll(".project-card-trigger")];
   const projectCloseButton = projectPanel.querySelector("[data-project-close]");
   const projectContent = {
@@ -31,7 +103,7 @@
   // module, so its expanded copy deliberately stays within the facts on its card.
   const projectDetails = {
     "formula-sae-telemetry": {
-      number: "01",
+      number: "03",
       type: "Telemetry / Infrastructure",
       title: "Formula SAE Telemetry & Observability Platform",
       lead: "A complete vehicle-data path built to turn track activity into information the team can use in real time.",
@@ -44,22 +116,8 @@
       ],
       tags: ["C++", "CAN bus", "InfluxDB", "Grafana", "Docker", "Linux"]
     },
-    "vehicle-state-estimation": {
-      number: "02",
-      type: "Sensor Fusion / Analysis",
-      title: "Vehicle State Estimation",
-      lead: "State-estimation and visualization tools that make noisy race-car sensor data easier to validate, replay, and diagnose.",
-      system: "Python tooling combines GNSS and inertial measurements into estimates of the car's position, velocity, and orientation. Recorded CAN, GPS, acceleration, wheel-speed, and temperature data can be replayed through the same analysis flow, with Rerun visualization exposing vehicle behavior and system bottlenecks.",
-      points: [
-        "Works with data from more than 10 vehicle sensors sampled at up to 20 Hz.",
-        "Uses Kalman and extended Kalman filtering for position, velocity, and orientation estimates.",
-        "Replays recorded sessions to validate estimates against repeatable inputs.",
-        "Visualizes vehicle behavior in Rerun to help diagnose performance bottlenecks."
-      ],
-      tags: ["Python", "EKF", "GNSS", "CAN bus", "Rerun", "Data replay"]
-    },
     "capsure-pill-dispenser": {
-      number: "03",
+      number: "04",
       type: "Embedded / Computer Vision",
       title: "CapSure Pill Dispenser",
       lead: "An award-winning embedded system that brings sensing, physical control, and a clear user interface into one medication workflow.",
@@ -73,7 +131,7 @@
       tags: ["Raspberry Pi", "OpenCV", "Python", "Servo control", "Touchscreen", "Hardware"]
     },
     "self-hosted-platform": {
-      number: "04",
+      number: "02",
       type: "Homelab / DevOps",
       title: "Self-Hosted Platform",
       lead: "A self-hosted platform for deploying, observing, and protecting the services I build and use.",
@@ -87,7 +145,7 @@
       tags: ["Linux", "Docker Compose", "GitHub Actions", "Borg", "Grafana", "Dell PowerEdge"]
     },
     "repo-context-agent": {
-      number: "05",
+      number: "01",
       type: "AI Agents / Developer Tooling",
       title: "Repo Context Agent",
       lead: "An agentic system that makes large codebases easier for language models and coding agents to understand.",
@@ -101,7 +159,7 @@
       tags: ["Python", "LLM APIs", "AWS Bedrock", "AgentCore", "GitHub webhooks"]
     },
     "ravenscope-digital-microscope": {
-      number: "06",
+      number: "05",
       type: "Computer Vision / Imaging",
       title: "RavenScope™ Digital Microscope",
       lead: "Camera and computer-vision systems for a patented precision tissue-enrichment microscope.",
@@ -129,7 +187,7 @@
       tags: ["React", "TypeScript", "CSS", "Interaction design", "Animation"]
     },
     "ai-classical-music-generator": {
-      number: "08",
+      number: "06",
       type: "Machine Learning / Music",
       title: "AI Classical Music Generator",
       lead: "A PyTorch sequence model trained to generate original classical-style melodies and polyphonic passages.",
@@ -141,19 +199,6 @@
       ],
       tags: ["Python", "PyTorch", "MIDI", "Sequence modeling", "Data pipelines"]
     },
-    "driver-screen": {
-      number: "09",
-      type: "CAN Bus / Embedded",
-      title: "Driver Screen",
-      lead: "A low-latency vehicle display that turns raw CAN messages into readable telemetry and immediate safety information.",
-      system: "The embedded board receives messages from the vehicle CAN bus, converts them into known sensor values, and presents the results to the driver. Engine-failure warnings share the same display path so critical conditions reach the cockpit without a separate monitoring workflow.",
-      points: [
-        "Converts CAN bus messages into readable, known sensor values.",
-        "Displays vehicle sensor information with less than 20 ms latency.",
-        "Routes every vehicle engine-failure warning to the driver display."
-      ],
-      tags: ["CAN bus", "Embedded systems", "Telemetry", "Driver safety"]
-    }
   };
   const vehicleCarPoints = [
     ...samplePolyline([[7,62],[9,52],[16,47],[26,44],[34,32],[41,27],[61,27],[70,35],[78,44],[89,47],[95,55],[94,64],[87,66],[84,60],[81,56],[75,55],[70,60],[68,66],[33,66],[30,60],[26,56],[20,55],[15,60],[13,66]], 54, true),
