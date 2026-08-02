@@ -15,6 +15,7 @@ echo "Checking required site files..."
 for file in index.html styles.css script.js; do
   assert_file "$file"
 done
+assert_file assets/Will_Turchin_Resume.pdf
 
 echo "Checking HTML document structure..."
 grep -Fqi '<!doctype html>' index.html || fail "index.html is missing its doctype"
