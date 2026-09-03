@@ -142,9 +142,9 @@ main, footer { position: relative; z-index: 2; }
 .projects { width: 100%; padding-left: 5vw; padding-right: 5vw; background: transparent; }
 .projects .section-heading { max-width: 1400px; margin: auto; }
 .project-grid { max-width: 1400px; margin: 60px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
-.project-card[data-project="repo-context-agent"] { order: 1; }
-.project-card[data-project="self-hosted-platform"] { order: 2; }
-.project-card[data-project="formula-sae-telemetry"] { order: 3; }
+.project-card[data-project="formula-sae-telemetry"] { order: 1; }
+.project-card[data-project="repo-context-agent"] { order: 2; }
+.project-card[data-project="self-hosted-platform"] { order: 3; }
 .project-card[data-project="capsure-pill-dispenser"] { order: 4; }
 .project-card[data-project="ravenscope-digital-microscope"] { order: 5; }
 .project-card[data-project="ai-classical-music-generator"] { order: 6; }
@@ -271,6 +271,7 @@ main, footer { position: relative; z-index: 2; }
 .project-panel-position i { display: block; width: 42px; height: 1px; background: #3c3c39; }
 .project-panel-position span:first-child { color: #c3c3bd; }
 .project-detail-layout { height: calc(100vh - 88px); height: calc(100dvh - 88px); display: grid; grid-template-columns: minmax(0, 1fr); }
+.project-panel.has-github .project-detail-layout { grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr); }
 .project-detail-copy { padding: clamp(56px, 7vh, 100px) clamp(38px, 6vw, 104px) 70px clamp(38px, 5vw, 84px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3e3e3a transparent; }
 .project-detail-type { margin: 0 0 25px; color: #777772; font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
 .project-detail-copy h2 { max-width: 690px; margin: 0; font-size: clamp(48px, 5.3vw, 88px); font-weight: 500; line-height: .94; letter-spacing: -.06em; }
@@ -282,6 +283,27 @@ main, footer { position: relative; z-index: 2; }
 .project-detail-points li { position: relative; padding: 0 0 16px 22px; color: #999993; font-size: 12px; line-height: 1.7; }
 .project-detail-points li::before { content: ""; position: absolute; top: .7em; left: 0; width: 5px; height: 5px; border: 1px solid #6f6f6a; border-radius: 50%; }
 .project-detail-tags { max-width: 660px; margin-top: 35px; padding-top: 2px; }
+.project-github { display: grid; align-content: center; gap: 22px; min-height: 0; padding: clamp(42px, 7vh, 96px) clamp(28px, 4vw, 72px); border-left: 1px solid var(--line); background: radial-gradient(circle at 70% 12%, rgba(255,255,255,.06), transparent 35%), #0c0c0c; overflow-y: auto; }
+.project-github[hidden] { display: none; }
+.github-preview { align-self: center; display: block; width: min(100%, 490px); margin: auto; border: 1px solid #393936; background: #111; box-shadow: 0 24px 70px rgba(0,0,0,.3); transition: border-color .25s, transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s; }
+.github-preview:hover, .github-preview:focus-visible { border-color: #a1a19b; box-shadow: 0 30px 78px rgba(0,0,0,.48); outline: none; transform: translateY(-5px); }
+.project-unavailable-preview { cursor: default; }
+.project-unavailable-preview:hover { border-color: #393936; box-shadow: 0 24px 70px rgba(0,0,0,.3); transform: none; }
+.project-unavailable-preview .github-preview-kicker { color: #ac8177; }
+.github-preview-image-wrap { position: relative; aspect-ratio: 1.91 / 1; overflow: hidden; border-bottom: 1px solid #31312e; background: linear-gradient(135deg, #1b1b19, #0c0c0c); }
+.github-preview-image-wrap::after { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 42%, rgba(255,255,255,.07)); pointer-events: none; }
+.github-preview-image-wrap img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.22,.61,.36,1); }
+.github-preview-image-wrap.is-unavailable img { display: none; }
+.github-preview:hover .github-preview-image-wrap img, .github-preview:focus-visible .github-preview-image-wrap img { transform: scale(1.035); }
+.github-preview-image-fallback { position: absolute; inset: 0; display: grid; place-items: center; color: #5f5f5b; font-size: 34px; letter-spacing: -.15em; }
+.github-preview-copy { display: grid; gap: 11px; padding: 22px; }
+.github-preview-kicker { display: inline-flex; align-items: center; gap: 8px; color: #8d8d87; font-size: 8px; letter-spacing: .11em; text-transform: uppercase; }
+.github-preview-kicker svg { width: 15px; height: 15px; fill: currentColor; }
+.project-site-preview .github-preview-kicker svg { display: none; }
+.github-preview-copy strong { color: #e6e6e0; font-family: var(--mono); font-size: 17px; font-weight: 400; }
+.github-preview-copy > span:not(.github-preview-kicker):not(.github-preview-action) { color: #878781; font-size: 12px; line-height: 1.65; }
+.github-preview-action { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding-top: 14px; border-top: 1px solid #30302d; color: #c9c9c3; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.github-preview-action i { font-size: 15px; font-style: normal; transition: transform .25s; }.github-preview:hover .github-preview-action i, .github-preview:focus-visible .github-preview-action i { transform: translate(3px, -3px); }
 .contact-dialog-copy .contact-form { margin-left: 0; margin-right: 0; }
 
 .capabilities { min-height: 110vh; display: flex; align-items: center; }
@@ -345,6 +367,7 @@ footer p span { margin-left: 25px; }.back-top { font-family: var(--mono); font-s
   .project-panel { overflow-y: auto; }
   .project-panel-header { position: sticky; top: 0; }
   .project-detail-copy { padding: 70px 8vw; overflow: visible; }
+  .project-github { min-height: auto; padding: 12px 8vw 70px; border-top: 1px solid var(--line); border-left: 0; overflow: visible; }
   .capabilities-layout { grid-template-columns: 1fr; gap: 70px; }.capabilities { min-height: auto; }
   .skill-group { grid-template-columns: 35px 160px 1fr; }
   #particle-field { opacity: .48; }
