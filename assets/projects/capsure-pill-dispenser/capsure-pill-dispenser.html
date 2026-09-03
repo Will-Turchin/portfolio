@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CapSure — a smart pill-management prototype for dementia care.">
+  <title>CapSure — Smart Pill Management for Dementia Care</title>
+  <style>
+    :root { --ink:#14201d; --muted:#59706a; --paper:#f6f7f3; --line:#dbe2dd; --accent:#0e7b61; --wash:#dff3e9; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color:inherit; }
+    .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
+    header { padding:76px 0 58px; background:linear-gradient(140deg,#0b2e29,#164c3f 65%,#187255); color:white; overflow:hidden; }
+    .eyebrow { margin:0 0 16px; color:#b9ead7; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
+    h1 { max-width:850px; margin:0; font-size:clamp(2.45rem,7vw,5.5rem); line-height:.95; letter-spacing:-.065em; }
+    .lede { max-width:710px; margin:28px 0 0; font-size:clamp(1.08rem,2vw,1.35rem); color:#e1f1e9; }
+    .meta { display:flex; gap:18px; flex-wrap:wrap; margin-top:30px; color:#b9ead7; font-size:.94rem; }
+    main { padding:64px 0 88px; }
+    .intro { display:grid; grid-template-columns:minmax(0,1.18fr) minmax(260px,.82fr); gap:64px; align-items:start; margin-bottom:72px; }
+    h2 { margin:0 0 15px; font-size:1.65rem; letter-spacing:-.04em; }
+    p { margin:0 0 17px; }
+    .note { background:var(--wash); padding:25px 27px; border-radius:18px; color:#174638; }
+    .note strong { display:block; margin-bottom:5px; font-size:.85rem; letter-spacing:.09em; text-transform:uppercase; }
+    .features { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:0 0 72px; }
+    .feature { padding:27px 24px 28px 0; }
+    .feature + .feature { padding-left:24px; border-left:1px solid var(--line); }
+    .feature b { display:block; margin-bottom:6px; font-size:1.03rem; }
+    .feature span { color:var(--muted); }
+    .gallery-title { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:22px; }
+    .gallery-title p { margin:0; color:var(--muted); }
+    .gallery { display:grid; grid-template-columns:repeat(12,1fr); gap:18px; }
+    figure { min-width:0; margin:0; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:white; }
+    figure.hero { grid-column:span 12; }
+    figure:not(.hero) { grid-column:span 6; }
+    figure img { width:100%; display:block; object-fit:cover; background:#e8ece9; }
+    figure.hero img { max-height:535px; object-fit:contain; padding:18px; }
+    figure:not(.hero) img { height:300px; }
+    figcaption { padding:15px 17px 18px; }
+    figcaption b { display:block; font-size:.96rem; }
+    figcaption span { display:block; margin-top:3px; color:var(--muted); font-size:.9rem; line-height:1.45; }
+    .closing { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:49px 0 0; margin-top:70px; border-top:1px solid var(--line); }
+    .button { display:inline-block; flex:none; padding:12px 17px; border-radius:9px; background:var(--accent); color:white; text-decoration:none; font-weight:650; }
+    footer { padding:25px 0; color:var(--muted); font-size:.85rem; }
+    @media (max-width:700px) { header { padding:60px 0 47px; } main { padding-top:45px; } .intro { grid-template-columns:1fr; gap:25px; margin-bottom:50px; } .features { grid-template-columns:1fr; margin-bottom:52px; } .feature, .feature + .feature { padding:20px 0; border-left:0; } .feature + .feature { border-top:1px solid var(--line); } figure:not(.hero) { grid-column:span 12; } figure:not(.hero) img { height:auto; max-height:440px; object-fit:contain; } .closing { display:block; margin-top:52px; } .closing .button { margin-top:8px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="eyebrow">Colorado School of Mines · ENDS151 K2 · Spring 2025</p>
+      <h1>CapSure<br>smart pill management for dementia care.</h1>
+      <p class="lede">A prototype designed to help semi-autonomous dementia patients follow their medication routines while giving caregivers timely, remote confirmation.</p>
+      <div class="meta"><span>Jan 2025 – May 2025</span><span>Team of five</span><span>Project contributor: Will Turchin</span></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div>
+        <h2>The challenge</h2>
+        <p>Patients with dementia may forget daily pill doses, placing a substantial burden on caregivers. Our team built a novel dispenser that stores dosage-based capsules, issues scheduled alerts, and records a short confirmation video when a dose is taken.</p>
+        <p>At the programmed time, the patient presses a button to dispense a dose-ball. A Raspberry Pi controls the system and activates a camera; the resulting video is uploaded to the cloud for caregiver review.</p>
+      </div>
+      <aside class="note">
+        <strong>Design question</strong>
+        How might we reduce the burden on caregivers of semi-autonomous dementia patients by improving pill-regimen adherence?
+      </aside>
+    </section>
+
+    <section class="features" aria-label="Core capabilities">
+      <div class="feature"><b>Scheduled dispensing</b><span>Pre-programmed intervals and an audible reminder prompt the next dose.</span></div>
+      <div class="feature"><b>Caregiver verification</b><span>A camera records the pill-taking event and uploads it for remote supervision.</span></div>
+      <div class="feature"><b>Embedded prototype</b><span>Raspberry Pi 4, camera, buzzer, servo motor, and a capsule-distribution mechanism.</span></div>
+    </section>
+
+    <section>
+      <div class="gallery-title">
+        <div><h2>Project media</h2><p>Design presentation, build documentation, and final prototype imagery.</p></div>
+      </div>
+      <div class="gallery">
+        <figure class="hero">
+          <img src="pill-dispenser-media/presentation-slide.jpg" alt="CapSure presentation slide describing the problem and solution">
+          <figcaption><b>Presentation slide</b><span>Selected for presentation to a panel of judges after the team won its class competition.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="pill-dispenser-media/electronics.jpg" alt="Electronics used in the CapSure prototype">
+          <figcaption><b>Electronics assembly</b><span>Raspberry Pi 4, camera, buzzer, and servo motor integrated for the final project.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="pill-dispenser-media/design-close-up.jpg" alt="Close-up of the CapSure pill dispenser mechanism">
+          <figcaption><b>Dispensing mechanism</b><span>With the front panel removed, the prototype shows the capsule path and Raspberry Pi-controlled gear mechanism.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="pill-dispenser-media/group.jpg" alt="CapSure project team before presenting">
+          <figcaption><b>Project team</b><span>The team immediately before presenting the final product.</span></figcaption>
+        </figure>
+        <figure>
+          <img src="pill-dispenser-media/housing-layout.jpg" alt="Design layout for the pill dispenser housing">
+          <figcaption><b>Housing design layout</b><span>Supporting design documentation used to communicate the proposed solution.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div><h2>From prototype to showcase</h2><p>The project was presented at the Mines Cornerstone Design Showcase after winning the class competition.</p></div>
+      <a class="button" href="https://www.linkedin.com/feed/update/urn:li:activity:7324294505946300416/" target="_blank" rel="noreferrer">View showcase post</a>
+    </section>
+  </main>
+  <footer class="wrap">CapSure · Smart Pill Management for Dementia Care</footer>
+</body>
+</html>

@@ -105,9 +105,9 @@
     });
   }
   [
+    "formula-sae-telemetry",
     "repo-context-agent",
     "self-hosted-platform",
-    "formula-sae-telemetry",
     "capsure-pill-dispenser",
     "ravenscope-digital-microscope",
     "ai-classical-music-generator",
@@ -125,7 +125,18 @@
     lead: projectPanel.querySelector("[data-project-lead]"),
     system: projectPanel.querySelector("[data-project-system]"),
     points: projectPanel.querySelector("[data-project-points]"),
-    tags: projectPanel.querySelector("[data-project-tags]")
+    tags: projectPanel.querySelector("[data-project-tags]"),
+    github: projectPanel.querySelector("[data-project-github]"),
+    githubPreview: projectPanel.querySelector(".github-preview")
+  };
+  const projectPreviewFallback = "assets/projects/repository-fallback.svg";
+  const proprietaryProjectLink = {
+    type: "proprietary",
+    name: "Public link unavailable",
+    description: "This project is proprietary, so I can’t publicly link its source code or supporting materials.",
+    thumbnail: projectPreviewFallback,
+    kicker: "Proprietary project",
+    action: "Source unavailable"
   };
   const pageSurfaces = [
     document.querySelector(".site-header"),
@@ -148,7 +159,12 @@
         "Runs on a Dell PowerEdge server with Docker Compose, backups, and health monitoring.",
         "Led telemetry development and mentored four teammates on architecture, Git, and deployments."
       ],
-      tags: ["C++", "CAN bus", "InfluxDB", "Grafana", "Docker", "Linux"]
+      tags: ["C++", "CAN bus", "InfluxDB", "Grafana", "Docker", "Linux"],
+      links: [{
+        url: "https://github.com/Mines-Formula/ThePipeline",
+        name: "Mines-Formula / ThePipeline",
+        description: "Source code for the Formula SAE telemetry platform."
+      }]
     },
     "capsure-pill-dispenser": {
       number: "04",
@@ -162,7 +178,16 @@
         "Connects alerts and cloud synchronization to the physical dispenser.",
         "Recognized as an award-winning project."
       ],
-      tags: ["Raspberry Pi", "OpenCV", "Python", "Servo control", "Touchscreen", "Hardware"]
+      tags: ["Raspberry Pi", "OpenCV", "Python", "Servo control", "Touchscreen", "Hardware"],
+      links: [{
+        type: "site",
+        url: "assets/projects/capsure-pill-dispenser/capsure-pill-dispenser.html",
+        name: "CapSure project site",
+        description: "Design documentation, prototype photos, and project presentation material.",
+        thumbnail: "assets/projects/capsure-pill-dispenser/pill-dispenser-media/presentation-slide.jpg",
+        kicker: "Project website",
+        action: "View project site"
+      }]
     },
     "self-hosted-platform": {
       number: "02",
@@ -204,7 +229,19 @@
         "Automatically detects sample regions before downstream analysis.",
         "Analyzes slides at 20 μm resolution in under five minutes."
       ],
-      tags: ["Java", "Python", "Raspberry Pi", "Arducam", "ImageJ", "Computer vision"]
+      tags: ["Java", "Python", "Raspberry Pi", "Arducam", "ImageJ", "Computer vision"],
+      links: [
+        {
+          name: "cameraPrograms",
+          url: "https://github.com/Will-Turchin/cameraPrograms",
+          description: "Slide-image cropping utilities for the RavenScope imaging workflow."
+        },
+        {
+          name: "ImageJ",
+          url: "https://github.com/Will-Turchin/ImageJ",
+          description: "ImageJ workflows used in the RavenScope imaging pipeline."
+        }
+      ]
     },
     "botta-daily-spin": {
       number: "07",
@@ -218,7 +255,16 @@
         "Uses weighted results to control prize outcomes.",
         "Adds easing, reveals, and rare-reward effects to the React interaction."
       ],
-      tags: ["React", "TypeScript", "CSS", "Interaction design", "Animation"]
+      tags: ["React", "TypeScript", "CSS", "Interaction design", "Animation"],
+      links: [{
+        type: "post",
+        url: "https://lnkd.in/p/eQDDtAJQ",
+        name: "Botta Daily Spin showcase",
+        description: "Project showcase post for the People's Choice-winning hackathon prototype.",
+        thumbnail: "assets/projects/linkedin-post-preview.svg",
+        kicker: "LinkedIn post",
+        action: "View on LinkedIn"
+      }]
     },
     "ai-classical-music-generator": {
       number: "06",
@@ -231,7 +277,12 @@
         "Converted 35 MIDI files into 1,000 tokenized input sequences.",
         "Generated polyphonic sequences with recognizable motifs after 50 epochs."
       ],
-      tags: ["Python", "PyTorch", "MIDI", "Sequence modeling", "Data pipelines"]
+      tags: ["Python", "PyTorch", "MIDI", "Sequence modeling", "Data pipelines"],
+      links: [{
+        name: "MidiAI",
+        url: "https://github.com/Will-Turchin/MidiAI",
+        description: "A machine-learning model for generating classical-style melodies."
+      }]
     },
   };
   const vehicleCarPoints = [
@@ -353,6 +404,47 @@
     projectContent.system.textContent = project.system;
     addListItems(projectContent.points, project.points);
     addListItems(projectContent.tags, project.tags);
+    const links = project.links?.length ? project.links : [proprietaryProjectLink];
+    projectPanel.classList.toggle("has-github", links.length > 0);
+    projectContent.github.hidden = links.length === 0;
+    projectContent.github.replaceChildren(...links.map((link) => {
+      const preview = projectContent.githubPreview.cloneNode(true);
+      const thumbnailWrap = preview.querySelector(".github-preview-image-wrap");
+      const thumbnail = preview.querySelector("[data-project-github-thumbnail]");
+      const isProjectSite = Boolean(link.type && link.type !== "github");
+      const isProprietary = link.type === "proprietary";
+      let fallbackLoaded = false;
+
+      if (isProprietary) {
+        preview.removeAttribute("href");
+        preview.removeAttribute("target");
+        preview.removeAttribute("rel");
+        preview.setAttribute("aria-disabled", "true");
+      } else {
+        preview.href = link.url;
+      }
+      preview.classList.toggle("project-site-preview", isProjectSite);
+      preview.classList.toggle("project-unavailable-preview", isProprietary);
+      preview.querySelector("[data-project-link-kicker]").textContent = link.kicker || "GitHub repository";
+      preview.querySelector("[data-project-github-name]").textContent = link.name;
+      preview.querySelector("[data-project-github-description]").textContent = link.description;
+      preview.querySelector("[data-project-link-action]").textContent = link.action || "Open on GitHub";
+      thumbnail.alt = `${link.name} ${isProjectSite ? "project preview" : "repository preview"}`;
+      thumbnail.addEventListener("error", () => {
+        if (fallbackLoaded) {
+          thumbnailWrap.classList.add("is-unavailable");
+          return;
+        }
+        fallbackLoaded = true;
+        thumbnail.src = projectPreviewFallback;
+        thumbnail.alt = "Technical workbench project preview";
+      });
+      thumbnail.addEventListener("load", () => thumbnailWrap.classList.remove("is-unavailable"));
+      thumbnail.src = link.thumbnail || (isProjectSite
+        ? projectPreviewFallback
+        : `https://opengraph.githubassets.com/portfolio/${link.url.replace("https://github.com/", "")}`);
+      return preview;
+    }));
   }
 
   function projectUrl(slug) {
