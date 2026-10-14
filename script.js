@@ -33,7 +33,7 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const coarse = matchMedia("(pointer: coarse)").matches;
   const sceneEls = [...document.querySelectorAll(".scene")];
-  const revealEls = [...document.querySelectorAll(".reveal")];
+  const revealEls = [...document.querySelectorAll(".reveal:not(.project-card)")];
   // The contact section owns both concentric rings. Keep the particle anchor
   // tied to this section, rather than to the headline, buttons, or footer copy;
   // those elements can reflow without moving the rings' shared center.
@@ -316,11 +316,10 @@
   let height = 0;
   let dpr = 1;
   let particles = [];
+  let scenePoints = [];
   let sceneAnchors = [];
   let scrollTarget = 0;
   let scrollPosition = 0;
-  let scrollVelocity = 0;
-  let lastScrollUpdate = performance.now();
   let lastFrame = performance.now();
   let time = 0;
   let activeProjectSlug = null;
@@ -755,6 +754,9 @@
       phase: seeded(i, 8) * TAU,
       drift: .35 + seeded(i, 9) * .65
     }));
+    // Forms are static. Sample once so morphing doesn't repeat thousands of
+    // trigonometric calculations on every frame, especially on mobile.
+    scenePoints = sceneForms.map((form) => particles.map((particle) => form(particle.i, count)));
   }
 
   function measureScenes() {
@@ -771,10 +773,7 @@
     updateScrollTarget();
   }
 
-  // Keep the point cloud visually behind the reader during decisive scrolls.
-  // The target still represents the current section, while the rendered
-  // position deliberately takes longer to catch up as input velocity rises.
-  function updateScrollTarget(trackVelocity = false) {
+  function updateScrollTarget() {
     const documentFocus = scrollY + height * .5;
     let index = 0;
     while (index < sceneAnchors.length - 1 && documentFocus > sceneAnchors[index + 1]) index += 1;
@@ -788,29 +787,25 @@
       nextTarget = index + clamp((documentFocus - start) / Math.max(1, end - start), 0, 1);
     }
 
-    if (trackVelocity && !reduceMotion) {
-      const now = performance.now();
-      const elapsed = clamp(now - lastScrollUpdate, 16, 120);
-      const velocity = Math.abs(nextTarget - scrollTarget) / (elapsed / 1000);
-      scrollVelocity = Math.max(scrollVelocity * .55, velocity);
-      lastScrollUpdate = now;
-    }
-
     scrollTarget = nextTarget;
   }
 
   function resize() {
+    const initialSize = width === 0;
+    const widthChanged = width !== innerWidth;
     width = innerWidth;
-    height = innerHeight;
+    // The canvas uses the stable large viewport height. Mobile browser chrome
+    // can expand/collapse while scrolling without moving the cloud's anchors.
+    height = canvas.clientHeight;
     dpr = Math.min(devicePixelRatio || 1, coarse ? 1.25 : 1.6);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildParticles();
+    // Keep particle identities through height-only resizes, and never reset an
+    // in-flight morph just because the viewport changed.
+    if (initialSize || widthChanged) buildParticles();
     measureScenes();
-    scrollPosition = scrollTarget;
+    if (initialSize) scrollPosition = scrollTarget;
   }
 
   function rotate(point, rx, ry, rz) {
@@ -830,11 +825,10 @@
   function draw(frameTime) {
     const frameScale = clamp((frameTime - lastFrame) / (1000 / 60), .25, 3);
     lastFrame = frameTime;
-    if (!reduceMotion) time += .0015;
-    scrollVelocity *= Math.pow(.9, frameScale);
-    const scrollSpeed = clamp(scrollVelocity / 3.5, 0, 1);
-    const followRate = reduceMotion ? 1 : lerp(.12, .032, scrollSpeed);
-    const followAmount = 1 - Math.pow(1 - followRate, frameScale);
+    if (!reduceMotion) time += .0015 * frameScale;
+    // A constant, time-based response stays continuous when input speeds up,
+    // reverses, or stops. Velocity-dependent lag used to surge on settling.
+    const followAmount = reduceMotion ? 1 : 1 - Math.exp(-frameScale * (1000 / 60) / 120);
     scrollPosition += (scrollTarget - scrollPosition) * followAmount;
     scrollPosition = clamp(scrollPosition, 0, Math.max(0, sceneForms.length - 1));
     pointer.x += (pointer.tx - pointer.x) * .08;
@@ -867,8 +861,8 @@
     ctx.fillStyle = "#f1f1eb";
 
     particles.forEach((particle) => {
-      const a = sceneForms[fromIndex](particle.i, particles.length);
-      const b = sceneForms[toIndex](particle.i, particles.length);
+      const a = scenePoints[fromIndex][particle.i];
+      const b = scenePoints[toIndex][particle.i];
       const warp = reduceMotion ? 0 : Math.sin(time * 3 + particle.phase + scrollPosition * 1.7) * .035 * particle.drift;
       const pivotA = a.rotationCenter || ORIGIN;
       const pivotB = b.rotationCenter || ORIGIN;
@@ -991,12 +985,11 @@
 
   addEventListener("resize", resize, { passive: true });
   addEventListener("scroll", () => {
-    updateScrollTarget(true);
+    updateScrollTarget();
   }, { passive: true });
   addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       lastFrame = performance.now();
-      scrollVelocity = 0;
       updateScrollTarget();
     }
   });
